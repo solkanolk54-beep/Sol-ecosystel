@@ -1,0 +1,6 @@
+{
+  "name": "SOL-Ecosystem Unified Console",
+  "description": "منظومة SOL-Ecosystem المتكاملة لدمج SolVision للاستشعار والرصد الفضائي، Kareema للعمليات الميدانية وتتبع الأسطول والمراعي، و AtlasCloud للسحابة السيادية وقواعد البيانات الجغرافية PostGIS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
