@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Globe2, 
   Satellite, 
@@ -13,7 +13,10 @@ import {
   FileCheck2,
   Code2,
   BookOpen,
-  Flame
+  Flame,
+  Mail,
+  Pin,
+  PinOff
 } from 'lucide-react';
 import { Language, SovereignCloudStatus, UserRole } from '../../types/ecosystem';
 
@@ -30,6 +33,8 @@ interface HeaderProps {
   onOpenSopManual?: () => void;
   onOpenStressTestModal?: () => void;
   activeAlertCount: number;
+  emailAlertCount?: number;
+  onOpenEmailModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -44,12 +49,19 @@ export const Header: React.FC<HeaderProps> = ({
   onResetSimulation,
   onOpenSopManual,
   onOpenStressTestModal,
-  activeAlertCount
+  activeAlertCount,
+  emailAlertCount = 0,
+  onOpenEmailModal
 }) => {
   const isAr = language === 'ar';
+  const [isPinned, setIsPinned] = useState(false);
 
   return (
-    <header className="border-b border-slate-800 bg-slate-950/90 backdrop-blur-md sticky top-0 z-40">
+    <header className={`border-b border-slate-800 bg-slate-950/95 transition-all ${
+      isPinned 
+        ? 'sticky top-0 z-40 backdrop-blur-md shadow-2xl' 
+        : 'relative z-20'
+    }`}>
       {/* Top Sovereign Status Bar */}
       <div className="border-b border-slate-900 bg-slate-900/40 px-4 py-1.5 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
@@ -71,7 +83,34 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          {/* Header Pin Toggle (Allows free scroll to prevent large top section from blocking the view) */}
+          <button
+            onClick={() => setIsPinned(!isPinned)}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono border transition-all cursor-pointer ${
+              isPinned
+                ? 'bg-emerald-950/70 border-emerald-500/60 text-emerald-300 shadow-sm'
+                : 'bg-slate-900/80 hover:bg-slate-800 border-slate-700/80 text-slate-400 hover:text-slate-200'
+            }`}
+            title={
+              isPinned
+                ? (isAr ? 'إلغاء تثبيت الشريط العلوي (جعله يتحرك مع التمرير)' : 'Unpin Header (Allow free scrolling)')
+                : (isAr ? 'تثبيت الشريط العلوي في أعلى الشاشة' : 'Pin Header to top of screen')
+            }
+          >
+            {isPinned ? (
+              <>
+                <Pin className="w-3 h-3 text-emerald-400 shrink-0" />
+                <span>{isAr ? 'مثبت' : 'Pinned'}</span>
+              </>
+            ) : (
+              <>
+                <PinOff className="w-3 h-3 text-amber-400 shrink-0" />
+                <span>{isAr ? 'حر (غير مثبت)' : 'Free Scroll'}</span>
+              </>
+            )}
+          </button>
+
           <div 
             onClick={() => setActiveTab('sovereign')}
             className="flex items-center gap-1.5 text-slate-300 font-mono text-[11px] bg-slate-900/80 px-2 py-0.5 rounded border border-emerald-500/30 hover:border-emerald-500/60 transition-colors cursor-pointer"
@@ -198,6 +237,23 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Flame className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
               <span>{isAr ? 'اختبار الضغط: DARK-DROUGHT' : 'Stress Test: DARK-DROUGHT'}</span>
+            </button>
+          )}
+
+          {/* Automated P1 Email Alerts Center Button */}
+          {onOpenEmailModal && (
+            <button
+              onClick={onOpenEmailModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-md bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/40 transition-colors cursor-pointer shadow-sm"
+              title="Automated Email Alerts (P1 Drought Outbreak)"
+            >
+              <Mail className="w-3.5 h-3.5 text-rose-400" />
+              <span>{isAr ? 'تنبيهات البريد P1' : 'P1 Email Alerts'}</span>
+              {emailAlertCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px] font-mono font-bold animate-pulse">
+                  {emailAlertCount}
+                </span>
+              )}
             </button>
           )}
 

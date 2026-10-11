@@ -255,3 +255,49 @@ export interface EmergencyStressTestState {
   scorecard: StressTestScorecardMetric[];
 }
 
+export interface TechnicianContact {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  email: string;
+  phone: string;
+  assignedFleetId: string;
+  sectorAr: string;
+  sectorEn: string;
+  status: 'ON_DUTY' | 'DISPATCHED' | 'STANDBY';
+  alertMethods: ('EMAIL' | 'SMS' | 'RADIO')[];
+}
+
+export interface AutomatedEmailAlert {
+  id: string; // e.g. "EML-DROUGHT-WO-CRISIS-01"
+  workOrderId: string;
+  recipientEmail: string;
+  recipientName: string;
+  supervisorCc: string;
+  subject: string;
+  subjectAr: string;
+  sentAt: string;
+  status: 'DELIVERED' | 'ACKNOWLEDGED' | 'QUEUED';
+  priority: 'P1_CRITICAL' | 'P2_HIGH';
+  assetCode: string;
+  assetName: string;
+  sector: string;
+  assignedFleet: string;
+  droughtTrigger: {
+    eventName: string;
+    spectralNdvi: number;
+    hydraulicPressureBar: number;
+    coordinates: [number, number];
+    slaDeadlineMinutes: number;
+    emergencyCode: string;
+  };
+  technicianActionTaken?: 'ACKNOWLEDGED' | 'EN_ROUTE' | 'ON_SITE';
+  acknowledgedAt?: string;
+  emailBodyHtml: string;
+  emailBodyText: string;
+  deliveryMta: string; // e.g. "Sovereign MTA Mail-Relay (TLS 1.3 / DZ-North-1)"
+  securitySeal: string; // SHA-256 integrity hash
+  messageId: string;
+}
+
+

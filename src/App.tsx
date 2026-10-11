@@ -10,7 +10,8 @@ import {
   SovereignCloudStatus, 
   UserRole, 
   OperationsKPIs, 
-  StressTestStage 
+  StressTestStage,
+  AutomatedEmailAlert
 } from './types/ecosystem';
 import { 
   INITIAL_PARCELS, 
@@ -24,9 +25,11 @@ import {
   STRESS_TEST_CRISIS_PIVOTS
 } from './data/mockData';
 import { eventBus } from './services/eventBus';
+import { notificationService } from './services/notificationService';
 import { Header } from './components/common/Header';
 import { GisMap } from './components/gis/GisMap';
 import { OperationsCenter } from './components/operations/OperationsCenter';
+import { EmailNotificationModal } from './components/operations/EmailNotificationModal';
 import { QualityPassports } from './components/governance/QualityPassports';
 import { SovereignCloudPanel } from './components/governance/SovereignCloudPanel';
 import { OpenApiDocs } from './components/api/OpenApiDocs';
@@ -37,7 +40,8 @@ import { StressTestModal } from './components/stressTest/StressTestModal';
 import { 
   Satellite, 
   Radio, 
-  Database, 
+  Database,
+  Mail, 
   CheckCircle2, 
   AlertTriangle, 
   Layers, 
@@ -75,7 +79,18 @@ export default function App() {
   const [kpis, setKpis] = useState<OperationsKPIs>(INITIAL_KPIS);
   const [targetBatchForPassportModal, setTargetBatchForPassportModal] = useState<string | null>(null);
 
-  // Subscribe to Event Bus for live state synchronization
+  // Automated Email Alerts Service State
+  const [emailAlerts, setEmailAlerts] = useState<AutomatedEmailAlert[]>(() => notificationService.getAlerts());
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [selectedEmailAlertId, setSelectedEmailAlertId] = useState<string | undefined>(undefined);
+  const [emailToastNotification, setEmailToastNotification] = useState<{
+    title: string;
+    subtitle: string;
+    time: string;
+    orderId: string;
+  } | null>(null);
+
+  // Subscribe to Event Bus and Notification Service for live state synchronization
   useEffect(() => {
     const unsubEvent = eventBus.subscribe((newEvent) => {
       setEvents((prev) => [newEvent, ...prev]);
@@ -85,11 +100,29 @@ export default function App() {
       setWorkOrders((prev) => [newWorkOrder, ...prev]);
     });
 
+    const unsubEmail = notificationService.subscribe((newAlert) => {
+      setEmailAlerts(notificationService.getAlerts());
+      setEmailToastNotification({
+        title: language === 'ar'
+          ? `تم إرسال إشعار بريدي آلي [P1]: ${newAlert.workOrderId}`
+          : `Automated [P1] Email Dispatched: ${newAlert.workOrderId}`,
+        subtitle: language === 'ar'
+          ? `الفني: ${newAlert.recipientName} (${newAlert.recipientEmail}) • القطاع: ${newAlert.sector}`
+          : `Responder: ${newAlert.recipientName} (${newAlert.recipientEmail}) • Sector: ${newAlert.sector}`,
+        time: newAlert.sentAt.slice(11, 19) + ' UTC',
+        orderId: newAlert.workOrderId
+      });
+      setTimeout(() => {
+        setEmailToastNotification(null);
+      }, 7000);
+    });
+
     return () => {
       unsubEvent();
       unsubWorkOrder();
+      unsubEmail();
     };
-  }, []);
+  }, [language]);
 
   // Generate 12 Crisis Work Orders for EXERCISE-DARK-DROUGHT-2026
   const generate12CrisisWorkOrders = (): WorkOrder[] => {
@@ -167,6 +200,9 @@ export default function App() {
       // Generate 12 crisis orders
       const crisisOrders = generate12CrisisWorkOrders();
       setWorkOrders((prev) => [...crisisOrders, ...prev.filter(wo => !wo.order_id.startsWith('WO-CRISIS'))]);
+
+      // Automatically dispatch real-time email alerts to field technicians for all 12 crisis work orders
+      notificationService.batchDispatchCrisisOrders(crisisOrders);
 
       // Emit high priority event
       eventBus.publish({
@@ -247,19 +283,45 @@ export default function App() {
 
   // Handler: Dispatch Stress Work Order (SolVision -> AtlasCloud -> Kareema)
   const handleDispatchStressWorkOrder = (parcel: ParcelAsset) => {
-    eventBus.triggerCropStressWorkflow(parcel, 'HIGH');
+    const { workOrder } = eventBus.triggerCropStressWorkflow(parcel, 'CRITICAL');
     
+    // Automatically dispatch email alert for field technician
+    notificationService.dispatchDroughtEmailAlert(workOrder);
+
     setParcels((prev) =>
       prev.map((p) =>
         p.asset_id === parcel.asset_id
           ? {
               ...p,
               status: 'STRESSED',
-              stressSeverity: 'HIGH'
+              stressSeverity: 'CRITICAL'
             }
           : p
       )
     );
+  };
+
+  // Automated Email Alerts Handlers
+  const handleTriggerTestDroughtEmailAlert = () => {
+    const crisisOrders = generate12CrisisWorkOrders();
+    const targetOrder = crisisOrders[0];
+    const alert = notificationService.dispatchDroughtEmailAlert(targetOrder);
+    setSelectedEmailAlertId(alert.id);
+    setIsEmailModalOpen(true);
+  };
+
+  const handleOpenEmailModalWithOrder = (orderId: string) => {
+    const targetAlert = emailAlerts.find(a => a.workOrderId === orderId);
+    if (targetAlert) {
+      setSelectedEmailAlertId(targetAlert.id);
+    } else {
+      const targetOrder = workOrders.find(wo => wo.order_id === orderId);
+      if (targetOrder) {
+        const newAlert = notificationService.dispatchDroughtEmailAlert(targetOrder);
+        setSelectedEmailAlertId(newAlert.id);
+      }
+    }
+    setIsEmailModalOpen(true);
   };
 
   // Handler: Dispatch Grazing Warning Work Order (Kareema -> SolVision)
@@ -418,7 +480,40 @@ export default function App() {
         onOpenSopManual={() => setIsSopManualOpen(true)}
         onOpenStressTestModal={() => setIsStressTestModalOpen(true)}
         activeAlertCount={activeAlertCount}
+        emailAlertCount={emailAlerts.length}
+        onOpenEmailModal={() => setIsEmailModalOpen(true)}
       />
+
+      {/* Real-time Automated Email Alert Toast Banner */}
+      {emailToastNotification && (
+        <div className="bg-gradient-to-r from-rose-950 via-slate-900 to-slate-950 border-b border-rose-500/60 px-4 py-2 text-xs text-rose-200 flex flex-wrap items-center justify-between gap-3 animate-in fade-in shadow-xl relative z-20 font-sans">
+          <div className="flex items-center gap-2.5">
+            <span className="p-1 rounded-full bg-rose-500/20 text-rose-400">
+              <Mail className="w-4 h-4 animate-pulse" />
+            </span>
+            <div>
+              <span className="font-bold text-white block">{emailToastNotification.title}</span>
+              <span className="text-[11px] text-slate-300">{emailToastNotification.subtitle}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-slate-400 font-mono">{emailToastNotification.time}</span>
+            <button
+              onClick={() => handleOpenEmailModalWithOrder(emailToastNotification.orderId)}
+              className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors cursor-pointer shadow-sm"
+            >
+              {isAr ? 'عرض البريد الفوري' : 'Inspect Email'}
+            </button>
+            <button
+              onClick={() => setEmailToastNotification(null)}
+              className="text-slate-400 hover:text-white px-2 py-0.5 text-sm font-bold cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Global Emergency Crisis Banner if Blackout is active */}
       {isBlackoutActive && (
@@ -521,6 +616,9 @@ export default function App() {
                   onCompleteWorkOrder={handleCompleteWorkOrder}
                   onRecenterFleetCorridor={handleRecenterFleetCorridor}
                   onOpenMobileSimulatorWithOrder={handleOpenMobileSimulatorWithOrder}
+                  emailAlerts={emailAlerts}
+                  onOpenEmailModal={() => setIsEmailModalOpen(true)}
+                  onOpenEmailModalWithOrder={handleOpenEmailModalWithOrder}
                 />
               </div>
             </div>
@@ -664,6 +762,20 @@ export default function App() {
           language={language}
           onApplyCrisisToConsole={handleApplyCrisisToConsole}
           onResetCrisis={handleResetSimulation}
+        />
+      )}
+
+      {/* Automated Email Notifications Modal */}
+      {isEmailModalOpen && (
+        <EmailNotificationModal
+          isOpen={isEmailModalOpen}
+          onClose={() => setIsEmailModalOpen(false)}
+          language={language}
+          alerts={emailAlerts}
+          onTriggerTestAlert={handleTriggerTestDroughtEmailAlert}
+          selectedAlertId={selectedEmailAlertId}
+          onOpenMobileSimulatorWithOrder={handleOpenMobileSimulatorWithOrder}
+          workOrders={workOrders}
         />
       )}
     </div>

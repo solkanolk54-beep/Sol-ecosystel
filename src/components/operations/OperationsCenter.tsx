@@ -18,7 +18,9 @@ import {
   Sparkles,
   MapPin,
   Navigation,
-  Smartphone
+  Smartphone,
+  Mail,
+  Eye
 } from 'lucide-react';
 import { 
   SystemEvent, 
@@ -26,7 +28,8 @@ import {
   Language, 
   ParcelAsset, 
   LivestockHerd,
-  UserRole 
+  UserRole,
+  AutomatedEmailAlert
 } from '../../types/ecosystem';
 
 interface OperationsCenterProps {
@@ -41,6 +44,9 @@ interface OperationsCenterProps {
   onCompleteWorkOrder: (orderId: string, notes: string) => void;
   onRecenterFleetCorridor: (fleetId: string) => void;
   onOpenMobileSimulatorWithOrder?: (order: WorkOrder) => void;
+  emailAlerts?: AutomatedEmailAlert[];
+  onOpenEmailModal?: () => void;
+  onOpenEmailModalWithOrder?: (orderId: string) => void;
 }
 
 export const OperationsCenter: React.FC<OperationsCenterProps> = ({
@@ -54,10 +60,13 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
   onDispatchGrazingWorkOrder,
   onCompleteWorkOrder,
   onRecenterFleetCorridor,
-  onOpenMobileSimulatorWithOrder
+  onOpenMobileSimulatorWithOrder,
+  emailAlerts = [],
+  onOpenEmailModal,
+  onOpenEmailModalWithOrder
 }) => {
   const isAr = language === 'ar';
-  const [activeTab, setActiveTab] = useState<'alerts' | 'workOrders' | 'eventBus'>('alerts');
+  const [activeTab, setActiveTab] = useState<'alerts' | 'workOrders' | 'eventBus' | 'emails'>('alerts');
   const [selectedEventForInspection, setSelectedEventForInspection] = useState<SystemEvent | null>(null);
   const [resolvingOrderId, setResolvingOrderId] = useState<string | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
@@ -89,10 +98,10 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center p-0.5 bg-slate-950 rounded-lg border border-slate-800 text-xs">
+        <div className="flex items-center p-0.5 bg-slate-950 rounded-lg border border-slate-800 text-xs flex-wrap gap-1">
           <button
             onClick={() => setActiveTab('alerts')}
-            className={`px-3 py-1 rounded-md font-medium transition-colors ${
+            className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
               activeTab === 'alerts'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -103,28 +112,45 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
 
           <button
             onClick={() => setActiveTab('workOrders')}
-            className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
               activeTab === 'workOrders'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span>{isAr ? 'أوامر العمل (Kareema)' : 'Work Orders'}</span>
+            <span>{isAr ? 'أوامر العمل' : 'Work Orders'}</span>
             <span className="w-4 h-4 rounded-full bg-slate-800 text-slate-300 text-[10px] flex items-center justify-center font-mono">
               {workOrders.length}
             </span>
           </button>
 
           <button
+            onClick={() => setActiveTab('emails')}
+            className={`px-2.5 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === 'emails'
+                ? 'bg-rose-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Mail className="w-3.5 h-3.5 text-rose-300" />
+            <span>{isAr ? 'تنبيهات البريد P1' : 'P1 Email Alerts'}</span>
+            {emailAlerts.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-rose-950 text-rose-300 border border-rose-700 text-[10px] font-mono font-bold animate-pulse">
+                {emailAlerts.length}
+              </span>
+            )}
+          </button>
+
+          <button
             onClick={() => setActiveTab('eventBus')}
-            className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
               activeTab === 'eventBus'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-            <span>{isAr ? 'ناقل الأحداث (Kafka)' : 'Event Bus Stream'}</span>
+            <span>{isAr ? 'ناقل الأحداث' : 'Event Bus'}</span>
           </button>
         </div>
       </div>
@@ -435,6 +461,23 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
                       )}
                     </div>
                   )}
+
+                  {/* Email Alert Banner for P1 Drought Orders */}
+                  {(order.severity === 'CRITICAL' || order.order_id.includes('CRISIS') || order.slaLevel === 'P1_CRITICAL') && (
+                    <div className="pt-2 mt-2 border-t border-slate-800/80 flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-1.5 text-[11px] text-rose-400 font-mono">
+                        <Mail className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+                        <span>{isAr ? 'تم إرسال إيميل P1 آلي للفني الميداني' : 'Automated P1 email dispatched to technician'}</span>
+                      </div>
+                      <button
+                        onClick={() => onOpenEmailModalWithOrder ? onOpenEmailModalWithOrder(order.order_id) : onOpenEmailModal ? onOpenEmailModal() : undefined}
+                        className="px-2 py-0.5 rounded bg-rose-950/80 hover:bg-rose-900 text-rose-300 hover:text-white border border-rose-800 text-[10px] font-bold font-mono flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <Eye className="w-3 h-3 text-rose-400" />
+                        <span>{isAr ? 'معاينة البريد' : 'Preview Email'}</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -478,6 +521,94 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Tab 4: Automated Email Alerts */}
+        {activeTab === 'emails' && (
+          <div className="space-y-3">
+            <div className="p-3 rounded-lg bg-gradient-to-r from-rose-950/40 to-slate-900 border border-rose-500/30 flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-rose-500/20 text-rose-400">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white">
+                    {isAr ? 'خدمة الإشعارات والتنبيه الآلي بالبريد الإلكتروني للفنيين' : 'Automated Technician Email Alert Dispatch Service'}
+                  </h4>
+                  <p className="text-[11px] text-slate-400">
+                    {isAr 
+                      ? 'يتم إرسال تنبيهات بريدية فورية مشفرة بـ TLS 1.3 للفنيين الميدانيين مع نسخة للمشرف عند إطلاق أوامر عمل P1 الحرجة.'
+                      : 'Real-time TLS 1.3 encrypted email dispatches transmitted automatically to technicians upon P1 drought order issuance.'}
+                  </p>
+                </div>
+              </div>
+              {onOpenEmailModal && (
+                <button
+                  onClick={onOpenEmailModal}
+                  className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>{isAr ? 'فتح مركز البريد الكامل' : 'Open Full Console'}</span>
+                </button>
+              )}
+            </div>
+
+            {emailAlerts.length === 0 ? (
+              <div className="p-8 text-center text-slate-500 text-xs">
+                <Mail className="w-8 h-8 text-slate-600 mx-auto mb-2 opacity-50" />
+                <p>{isAr ? 'لم يتم إرسال أي تنبيهات بريدية بعد. يتم الإرسال آلياً فور إطلاق أوامر P1 أثناء الجفاف.' : 'No automated email alerts dispatched yet. Dispatches trigger automatically during P1 drought events.'}</p>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {emailAlerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className="p-3.5 rounded-lg bg-slate-900/70 border border-slate-800 space-y-2 hover:border-slate-700 transition-colors"
+                  >
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-cyan-400 text-xs">{alert.workOrderId}</span>
+                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-rose-950 text-rose-300 border border-rose-800">
+                          P1 CRITICAL
+                        </span>
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
+                          alert.status === 'ACKNOWLEDGED'
+                            ? 'bg-cyan-950 text-cyan-300 border border-cyan-800'
+                            : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                        }`}>
+                          {alert.status}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-400 font-mono">{alert.sentAt}</span>
+                    </div>
+
+                    <div>
+                      <h4 className="text-xs font-bold text-white">
+                        {isAr ? alert.subjectAr : alert.subject}
+                      </h4>
+                      <p className="text-[11px] text-slate-300/80 mt-0.5">
+                        {alert.assetName} • {alert.sector} • Vehicle: {alert.assignedFleet}
+                      </p>
+                    </div>
+
+                    <div className="p-2 rounded bg-slate-950 border border-slate-850 flex items-center justify-between text-[11px] font-mono">
+                      <div>
+                        <span className="text-slate-500">TO: </span>
+                        <span className="text-white font-semibold">{alert.recipientName} ({alert.recipientEmail})</span>
+                      </div>
+                      <button
+                        onClick={() => onOpenEmailModalWithOrder ? onOpenEmailModalWithOrder(alert.workOrderId) : onOpenEmailModal ? onOpenEmailModal() : undefined}
+                        className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>{isAr ? 'عرض نص البريد' : 'Read Email'}</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

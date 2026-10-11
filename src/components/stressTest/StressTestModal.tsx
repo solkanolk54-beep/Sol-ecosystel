@@ -75,8 +75,8 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({
       time: '09:15 AM',
       titleAr: 'المرحلة 1: التفشي الطيفي لبيانات الإجهاد (12 تنبيه P1)',
       titleEn: 'Phase 1: Multi-Point Stress Outbreak',
-      descAr: 'إطلاق مفاجئ لـ 12 تنبيه P1 متزامن من SolVision عبر المحاور Pivot 01 و 02 و 04 بمساحة 45 هكتاراً (NDVI = 0.28). توليد 12 أمر عمل فوري.',
-      descEn: 'SolVision detects sudden 12 simultaneous P1 stress events across Pivots 01, 02, 04 on 45ha (NDVI = 0.28). 12 work orders dispatched.',
+      descAr: 'إطلاق مفاجئ لـ 12 تنبيه P1 متزامن من SolVision عبر المحاور Pivot 01 و 02 و 04 بمساحة 45 هكتاراً (NDVI = 0.28). توليد 12 أمر عمل فوري مع إرسال إشعارات بريدية آلية فورية للفنيين الميدانيين (SLA < 15 دقيقة).',
+      descEn: 'SolVision detects sudden 12 simultaneous P1 stress events across Pivots 01, 02, 04 on 45ha (NDVI = 0.28). 12 work orders dispatched with automated real-time email alerts transmitted to field technicians (SLA < 15 min).',
       iconColor: 'rose'
     },
     {
