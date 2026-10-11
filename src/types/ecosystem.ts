@@ -300,4 +300,117 @@ export interface AutomatedEmailAlert {
   messageId: string;
 }
 
+// ==========================================
+// AgriGIS Algérie (منظومة نظم المعلومات الجغرافية الفلاحية الجزائرية)
+// ==========================================
+
+export type AlgeriaPoleCategory = 
+  | 'SAHARAN_PIVOTS' 
+  | 'OASIS_DATES' 
+  | 'CEREAL_PLAINS' 
+  | 'HORTICULTURE_STEPPE';
+
+export interface AgriGisParcelCadastre {
+  id: string;
+  code: string;
+  nameAr: string;
+  nameEn: string;
+  cropAr: string;
+  cropEn: string;
+  areaHa: number;
+  irrigationTypeAr: string;
+  irrigationTypeEn: string;
+  status: 'OPTIMAL' | 'STRESSED' | 'IRRIGATING';
+  ndvi: number;
+  moisturePercent: number;
+  waterFlowLps: number;
+  pivotRadiusM: number;
+  rotationArmAngle: number;
+  coordinates: [number, number]; // [lat, lng]
+  waterWellDepthM: number;
+  soilEcSalinity: number;
+  nitrogenPpm: number;
+}
+
+export interface AgriGisWilayaPole {
+  id: string;
+  wilayaNumber: number;
+  nameAr: string;
+  nameEn: string;
+  nameFr: string;
+  category: AlgeriaPoleCategory;
+  categoryLabelAr: string;
+  categoryLabelEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
+  totalAreaHectares: number;
+  activePivotsCount: number;
+  primaryCropsAr: string[];
+  primaryCropsEn: string[];
+  waterSourceAr: string;
+  waterSourceEn: string;
+  waterTableDepthMeters: number;
+  waterAquiferName: string; // e.g. "حوض المياه الجوفية الألبي (Continent Intercalaire)"
+  alsatResolution: string;
+  coordinates: [number, number]; // Center [lat, lng]
+  dasConcessionsCount: number; // ODAS concessions
+  annualProductionTons: number;
+  ndviHealthIndex: number;
+  droughtVulnerability: 'LOW' | 'MEDIUM' | 'HIGH';
+  parcels: AgriGisParcelCadastre[];
+  keyPerimeter: string;
+}
+
+export interface AlsatSatelliteMission {
+  id: string;
+  satellite: 'Alsat-1B' | 'Alsat-2A' | 'Alsat-2B' | 'Alsat-1N';
+  launchYear: number;
+  orbitAltitudeKm: number;
+  sensorType: string;
+  resolutionMeters: string;
+  spectralBands: string[];
+  revisitPeriodDays: number;
+  coverageAgencyAr: string;
+  coverageAgencyEn: string;
+  status: 'OPERATIONAL' | 'STANDBY';
+  currentPassTargetAr: string;
+  currentPassTargetEn: string;
+  lastAcquisitionUtc: string;
+  telemetryLinkQualityPercent: number;
+}
+
+export interface OdasConcession {
+  id: string;
+  code: string; // e.g. "ODAS-MENIA-2026-P04"
+  investorNameAr: string;
+  investorNameEn: string;
+  wilayaAr: string;
+  wilayaEn: string;
+  perimeterNameAr: string;
+  perimeterNameEn: string;
+  allocatedHectares: number;
+  cultivatedHectares: number;
+  targetCropsAr: string;
+  targetCropsEn: string;
+  boreholesCount: number;
+  boreholeAvgDepthM: number;
+  status: 'OPERATIONAL_HARVEST' | 'EXPANSION_PHASE' | 'DRILLING_PHASE';
+  investmentTier: 'STRATEGIC_NATIONAL' | 'AGRI_INDUSTRIAL' | 'INNOVATION_PILOT';
+  approvalDate: string;
+}
+
+export interface WaterTableSensorNode {
+  id: string;
+  code: string;
+  regionAr: string;
+  aquiferNameAr: string;
+  piezometricLevelM: number;
+  staticWaterLevelM: number;
+  rechargeRateMmYear: number;
+  salinityGramsPerLiter: number;
+  sustainabilityStatus: 'SUSTAINABLE' | 'MODERATE_MONITORED' | 'STRESSED';
+  lastPiezometerReading: string;
+}
+
+
 

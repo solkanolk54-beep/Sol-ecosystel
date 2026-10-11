@@ -37,6 +37,7 @@ import { SopManualModal } from './components/sop/SopManualModal';
 import { KareemaMobileSimulatorModal } from './components/sop/KareemaMobileSimulatorModal';
 import { KpiDashboardBar } from './components/sop/KpiDashboardBar';
 import { StressTestModal } from './components/stressTest/StressTestModal';
+import { AgriGisAlgerieHub } from './components/agrigis/AgriGisAlgerieHub';
 import { 
   Satellite, 
   Radio, 
@@ -56,7 +57,7 @@ import {
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('ar');
-  const [activeTab, setActiveTab] = useState<'gis' | 'passports' | 'sovereign' | 'api'>('gis');
+  const [activeTab, setActiveTab] = useState<'gis' | 'agrigis' | 'passports' | 'sovereign' | 'api'>('gis');
 
   // SOP Role state (Section 2 of SOP)
   const [currentRole, setCurrentRole] = useState<UserRole>('ALL');
@@ -569,16 +570,27 @@ export default function App() {
                       <span>{isAr ? '[1] الخريطة الجغرافية التفاعلية (GIS Center Stage)' : '[1] GIS Interactive Map'}</span>
                     </span>
                     <span className="text-slate-600">·</span>
-                    <span className="font-mono text-cyan-400">Sentinel-2 MSI Orbit 44</span>
+                    <span className="font-mono text-cyan-400">Sentinel-2 & Alsat-2A</span>
                   </div>
-                  {isBlackoutActive ? (
-                    <span className="font-mono text-[11px] text-amber-400 flex items-center gap-1">
-                      <HardDrive className="w-3 h-3" />
-                      <span>Pre-cached Vector Tiles (Offline)</span>
-                    </span>
-                  ) : (
-                    <span className="font-mono text-[11px] text-slate-500">PostGIS Geometry Layer</span>
-                  )}
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveTab('agrigis')}
+                      className="px-2.5 py-1 rounded bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:border-emerald-400"
+                    >
+                      <Wheat className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>{isAr ? 'منظومة AgriGIS Algérie 🇩🇿' : 'AgriGIS Algérie Hub 🇩🇿'}</span>
+                    </button>
+
+                    {isBlackoutActive ? (
+                      <span className="font-mono text-[11px] text-amber-400 flex items-center gap-1">
+                        <HardDrive className="w-3 h-3" />
+                        <span>Pre-cached Vector Tiles (Offline)</span>
+                      </span>
+                    ) : (
+                      <span className="font-mono text-[11px] text-slate-500 hidden sm:inline">PostGIS Geometry Layer</span>
+                    )}
+                  </div>
                 </div>
 
                 <GisMap
@@ -677,6 +689,49 @@ export default function App() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* VIEW: AgriGIS Algérie National Spatial System Tab */}
+        {activeTab === 'agrigis' && (
+          <AgriGisAlgerieHub
+            language={language}
+            onDispatchWorkOrder={(orderTitle, parcelName, coords) => {
+              const newOrder: WorkOrder = {
+                order_id: `WO-DZ-${Date.now().toString().slice(-4)}`,
+                trigger_event_id: `EVT-DZ-${Date.now().toString().slice(-4)}`,
+                asset_id: `DZ-ASSET-${Date.now().toString().slice(-4)}`,
+                assetName: parcelName,
+                title: orderTitle,
+                titleEn: orderTitle,
+                description: `أمر صيانة وتدقيق ميداني لمحور ${parcelName} تحت إشراف ديوان ODAS والربط مع العقدة السيادية بالجزائر DZ-North-1`,
+                descriptionEn: `Field maintenance & inspection order for ${parcelName} under ODAS & Algiers Sovereign Node DZ-North-1`,
+                severity: 'HIGH',
+                status: 'DISPATCHED',
+                assignedTechnician: 'م. عبد القادر بلقاسم (مهندس العمليات الميدانية - ولاية المنيعة)',
+                coordinates: coords,
+                bbox: {
+                  minLat: coords[0] - 0.005,
+                  minLng: coords[1] - 0.005,
+                  maxLat: coords[0] + 0.005,
+                  maxLng: coords[1] + 0.005
+                },
+                createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
+                etaMinutes: 20,
+                solutionType: 'IRRIGATION_BOOST',
+                slaLevel: 'P1_CRITICAL',
+                slaMaxMinutes: 30,
+                slaRemainingMinutes: 25,
+                isOfflineSynced: true
+              };
+              setWorkOrders(prev => [newOrder, ...prev]);
+              setActiveTab('gis');
+            }}
+            onOpenQualityPassport={(batchId) => {
+              setTargetBatchForPassportModal(batchId);
+              setActiveTab('passports');
+            }}
+            onSwitchToGeneralGis={() => setActiveTab('gis')}
+          />
         )}
 
         {/* VIEW 2: Seed-to-Silo Digital Quality Passports Tab */}

@@ -16,15 +16,16 @@ import {
   Flame,
   Mail,
   Pin,
-  PinOff
+  PinOff,
+  Wheat
 } from 'lucide-react';
 import { Language, SovereignCloudStatus, UserRole } from '../../types/ecosystem';
 
 interface HeaderProps {
   language: Language;
   setLanguage: (lang: Language) => void;
-  activeTab: 'gis' | 'passports' | 'sovereign' | 'api';
-  setActiveTab: (tab: 'gis' | 'passports' | 'sovereign' | 'api') => void;
+  activeTab: 'gis' | 'agrigis' | 'passports' | 'sovereign' | 'api';
+  setActiveTab: (tab: 'gis' | 'agrigis' | 'passports' | 'sovereign' | 'api') => void;
   cloudStatus: SovereignCloudStatus;
   currentRole?: UserRole;
   onSimulateStress: () => void;
@@ -187,6 +188,21 @@ export const Header: React.FC<HeaderProps> = ({
                 {activeAlertCount}
               </span>
             )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('agrigis')}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap ${
+              activeTab === 'agrigis'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm border border-emerald-400/40'
+                : 'text-emerald-400/90 hover:text-emerald-300 hover:bg-slate-800/80'
+            }`}
+          >
+            <Wheat className="w-3.5 h-3.5 text-emerald-400" />
+            <span>{isAr ? 'منظومة AgriGIS Algérie' : 'AgriGIS Algérie'}</span>
+            <span className="text-[10px] font-mono px-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              DZ
+            </span>
           </button>
 
           <button
