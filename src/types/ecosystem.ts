@@ -412,5 +412,97 @@ export interface WaterTableSensorNode {
   lastPiezometerReading: string;
 }
 
+// SOL GLOBAL • US-DZ AIRLIFT TRACE TYPES
+export type AirliftFlightStatus = 'AIRBORNE' | 'APPROACHING' | 'LANDED_QUARANTINE' | 'DISPATCHED_TO_DAIRY' | 'SCHEDULED_DEPARTURE';
+export type CargoBreedType = 'HOLSTEIN_HEIFER' | 'JERSEY_GENOMIC' | 'BROWN_SWISS_ARID';
+
+export interface AirliftCargoSpec {
+  headCount: number;
+  breed: CargoBreedType;
+  breedLabelAr: string;
+  breedLabelEn: string;
+  avgWeightKg: number;
+  gestationStageWeeks: number; // e.g. 14-22 weeks pregnant heifers
+  originState: 'Texas' | 'Arizona' | 'New Mexico';
+  originRanch: string;
+  usdaHealthCertNumber: string;
+  rfidRangeStart: string;
+  rfidRangeEnd: string;
+  averageGenomicMeritIndex: number; // TPI / Genomic rating
+  waterConsumptionRateLitersPerHour: number;
+}
+
+export interface AircraftTelemetry {
+  callsign: string;
+  aircraftType: 'Boeing 747-400F' | 'Boeing 777F' | 'Ilyushin Il-76TD-90VD';
+  operator: string;
+  originIcao: string;
+  originName: string;
+  destIcao: string;
+  destNameAr: string;
+  destNameEn: string;
+  destWilayaNumber: number;
+  currentCoordinates: [number, number];
+  altitudeFeet: number;
+  groundSpeedKnots: number;
+  headingDeg: number;
+  cabinTemperatureCelsius: number;
+  cabinHumidityPercent: number;
+  cabinCo2Ppm: number;
+  ventilationStatus: 'OPTIMAL_CIRCULATION' | 'BOOST_FAN_ACTIVE' | 'WARNING_HIGH_HUMIDITY';
+  feedWaterSupplyRemainingHours: number;
+  estimatedArrivalUtc: string;
+  routeProgressPercent: number;
+  flightPathWaypoints: [number, number][];
+}
+
+export interface ReceptionHubAndQuarantine {
+  quarantineStationId: string;
+  airportIcao: string;
+  stationNameAr: string;
+  stationNameEn: string;
+  wilayaAr: string;
+  veterinarySupervisors: string[];
+  quarantineCapacityHeads: number;
+  activeOccupancyHeads: number;
+  targetMegaDairyAr: string;
+  targetMegaDairyEn: string;
+  transportFleetAssignedCount: number;
+  isolationProtocolDays: number;
+  biosecurityLevel: 'STRICT_QUARANTINE_L4' | 'BIOSECURE_EXPEDITION' | 'CLEARANCE_GRANTED';
+}
+
+export interface CowIndividualPedigree {
+  tagId: string;
+  rfidChipId: string;
+  breed: CargoBreedType;
+  sireName: string;
+  damName: string;
+  expectedAnnualMilkYieldLiters: number;
+  heatToleranceScore: number;
+  pregnancyStatus: string;
+  genomicProfileScore: number;
+  usdaExportSeal: string;
+  dzMinistryHealthApproval: string;
+  assignedAirBridgeFlight: string;
+  currentLocationStage: 'IN_TRANSIT_AIR' | 'QUARANTINE_INSPECTION' | 'CLIMATE_CONVOY' | 'DESERT_PARLOR';
+  currentHeartRateBpm: number;
+  temperatureCelsius: number;
+}
+
+export interface AirliftMission {
+  flightId: string;
+  status: AirliftFlightStatus;
+  missionNameAr: string;
+  missionNameEn: string;
+  cargo: AirliftCargoSpec;
+  telemetry: AircraftTelemetry;
+  receptionHub: ReceptionHubAndQuarantine;
+  sampledPedigreeList: CowIndividualPedigree[];
+  serverConnectionStatus: 'CONNECTED_REALTIME' | 'OFFLINE_REPLAY' | 'STANDBY';
+  satelliteDataRelay: 'INMARSAT_AERO_04' | 'ALSAT_GROUND_LINK' | 'STARLINK_AIR';
+  lastTelemetryPingSec: number;
+}
+
 
 

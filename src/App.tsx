@@ -38,6 +38,7 @@ import { KareemaMobileSimulatorModal } from './components/sop/KareemaMobileSimul
 import { KpiDashboardBar } from './components/sop/KpiDashboardBar';
 import { StressTestModal } from './components/stressTest/StressTestModal';
 import { AgriGisAlgerieHub } from './components/agrigis/AgriGisAlgerieHub';
+import { UsDzAirliftTraceHub } from './components/operations/UsDzAirliftTraceHub';
 import { 
   Satellite, 
   Radio, 
@@ -52,12 +53,13 @@ import {
   Flame,
   WifiOff,
   Zap,
-  HardDrive
+  HardDrive,
+  Plane
 } from 'lucide-react';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('ar');
-  const [activeTab, setActiveTab] = useState<'gis' | 'agrigis' | 'passports' | 'sovereign' | 'api'>('gis');
+  const [activeTab, setActiveTab] = useState<'gis' | 'agrigis' | 'airlift' | 'passports' | 'sovereign' | 'api'>('gis');
 
   // SOP Role state (Section 2 of SOP)
   const [currentRole, setCurrentRole] = useState<UserRole>('ALL');
@@ -579,7 +581,16 @@ export default function App() {
                       className="px-2.5 py-1 rounded bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:border-emerald-400"
                     >
                       <Wheat className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>{isAr ? 'منظومة AgriGIS Algérie 🇩🇿' : 'AgriGIS Algérie Hub 🇩🇿'}</span>
+                      <span>{isAr ? 'منظومة AgriGIS Algérie 🇩🇿' : 'AgriGIS Algérie 🇩🇿'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('airlift')}
+                      className="px-2.5 py-1 rounded bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-500/50 text-indigo-300 font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:border-indigo-400"
+                    >
+                      <Plane className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>{isAr ? 'الجسر الجوي US-DZ ✈️' : 'US-DZ Airlift ✈️'}</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                     </button>
 
                     {isBlackoutActive ? (
@@ -734,6 +745,48 @@ export default function App() {
           />
         )}
 
+        {/* VIEW: SOL GLOBAL • US-DZ AIRLIFT TRACE Tab */}
+        {activeTab === 'airlift' && (
+          <UsDzAirliftTraceHub
+            language={language}
+            onDispatchConvoyWorkOrder={(orderTitle, airportHub, coords) => {
+              const newOrder: WorkOrder = {
+                order_id: `WO-AIRLIFT-${Date.now().toString().slice(-4)}`,
+                trigger_event_id: `EVT-AIR-${Date.now().toString().slice(-4)}`,
+                asset_id: `AIRLIFT-DZ-${airportHub.slice(0, 3)}`,
+                assetName: airportHub,
+                title: orderTitle,
+                titleEn: orderTitle,
+                description: `استقبال وتأمين حجر بيطري صحراوي وقافلة شاحنات مبردة لنقل قطيع أبقار عشار مستوردة بموجب شهادة USDA ومصادقة MADR`,
+                descriptionEn: `Airport quarantine reception & climate-controlled convoy deployment for imported US pregnant heifers under USDA/MADR clearance`,
+                severity: 'HIGH',
+                status: 'DISPATCHED',
+                assignedTechnician: 'د. كريم بن زاهي (كبير الأطباء البيطريين - مديرية المصالح البيطرية)',
+                coordinates: coords,
+                bbox: {
+                  minLat: coords[0] - 0.005,
+                  minLng: coords[1] - 0.005,
+                  maxLat: coords[0] + 0.005,
+                  maxLng: coords[1] + 0.005
+                },
+                createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
+                etaMinutes: 15,
+                solutionType: 'HERD_REDIVERSION',
+                slaLevel: 'P1_CRITICAL',
+                slaMaxMinutes: 30,
+                slaRemainingMinutes: 28,
+                isOfflineSynced: true
+              };
+              setWorkOrders(prev => [newOrder, ...prev]);
+              setActiveTab('gis');
+            }}
+            onOpenQualityPassport={(tagId) => {
+              setTargetBatchForPassportModal(tagId);
+              setActiveTab('passports');
+            }}
+          />
+        )}
+
         {/* VIEW 2: Seed-to-Silo Digital Quality Passports Tab */}
         {activeTab === 'passports' && (
           <QualityPassports
@@ -783,7 +836,7 @@ export default function App() {
           <span>·</span>
           <span className="text-emerald-400">PostGIS 3.4 / GeoServer 2.24</span>
           <span>·</span>
-          <span>Kingdom of Saudi Arabia</span>
+          <span>الجمهورية الجزائرية الديمقراطية الشعبية</span>
         </div>
       </footer>
 

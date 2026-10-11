@@ -17,15 +17,16 @@ import {
   Mail,
   Pin,
   PinOff,
-  Wheat
+  Wheat,
+  Plane
 } from 'lucide-react';
 import { Language, SovereignCloudStatus, UserRole } from '../../types/ecosystem';
 
 interface HeaderProps {
   language: Language;
   setLanguage: (lang: Language) => void;
-  activeTab: 'gis' | 'agrigis' | 'passports' | 'sovereign' | 'api';
-  setActiveTab: (tab: 'gis' | 'agrigis' | 'passports' | 'sovereign' | 'api') => void;
+  activeTab: 'gis' | 'agrigis' | 'airlift' | 'passports' | 'sovereign' | 'api';
+  setActiveTab: (tab: 'gis' | 'agrigis' | 'airlift' | 'passports' | 'sovereign' | 'api') => void;
   cloudStatus: SovereignCloudStatus;
   currentRole?: UserRole;
   onSimulateStress: () => void;
@@ -202,6 +203,21 @@ export const Header: React.FC<HeaderProps> = ({
             <span>{isAr ? 'منظومة AgriGIS Algérie' : 'AgriGIS Algérie'}</span>
             <span className="text-[10px] font-mono px-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
               DZ
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('airlift')}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap ${
+              activeTab === 'airlift'
+                ? 'bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 text-white shadow-sm border border-indigo-400/50'
+                : 'text-indigo-400/90 hover:text-indigo-300 hover:bg-slate-800/80'
+            }`}
+          >
+            <Plane className="w-3.5 h-3.5 text-indigo-400" />
+            <span>{isAr ? 'الجسر الجوي US-DZ (أبقار تكساس)' : 'US-DZ Airlift Trace'}</span>
+            <span className="text-[10px] font-mono px-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              ONLINE
             </span>
           </button>
 

@@ -227,7 +227,7 @@ class SolEcosystemEventBus {
         water_stress_free: passport.waterStressFreeIndex,
         cryptographic_hash: passport.cryptographicSeal.hash,
         merkle_root: passport.cryptographicSeal.merkleRoot,
-        sovereignty_status: 'KSA_NATIONAL_SOVEREIGN_VAULT_SEALED'
+        sovereignty_status: 'DZ_NATIONAL_SOVEREIGN_VAULT_SEALED'
       }
     });
   }

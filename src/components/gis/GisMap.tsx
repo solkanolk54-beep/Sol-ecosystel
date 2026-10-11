@@ -267,8 +267,8 @@ export const GisMap: React.FC<GisMapProps> = ({
           <g opacity="0.4">
             <path d="M 0,220 Q 300,180 600,240 T 1000,200" fill="none" stroke="#334155" strokeWidth="1" strokeDasharray="4 6" />
             <path d="M 0,420 Q 400,380 700,440 T 1000,390" fill="none" stroke="#334155" strokeWidth="1" strokeDasharray="4 6" />
-            <text x="70" y="140" fill="#475569" fontSize="12" fontFamily="monospace">Al-Kharj Agricultural Basin (Sector 04)</text>
-            <text x="680" y="620" fill="#475569" fontSize="12" fontFamily="monospace">Wadi Al-Bayad Rangeland Pasture</text>
+            <text x="70" y="140" fill="#475569" fontSize="12" fontFamily="monospace">El Menia & Sahara Agricultural Basin (ODAS Sector 04)</text>
+            <text x="680" y="620" fill="#475569" fontSize="12" fontFamily="monospace">High Plateaus Steppe Pasture (Steppe Algérienne)</text>
           </g>
 
           {/* Rotational Grazing Recommended Corridor between Zone B and Zone D */}

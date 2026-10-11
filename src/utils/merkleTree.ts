@@ -145,7 +145,7 @@ export function constructMerkleTree(rawLeaves: Omit<MerkleLeaf, 'leafHash' | 'me
       leaves: [],
       treeLayers: [],
       lastSealedAt: new Date().toISOString(),
-      hsmRootCa: 'KSA-ATLAS-AGRI-ROOT-CA#0844',
+      hsmRootCa: 'DZ-ATLAS-AGRI-ROOT-CA#0844',
       algorithm: 'SHA-256 / Binary Merkle Tree (RFC 6962)',
       complianceStandard: 'SOP-SOL-OPS-2026-V1'
     };
@@ -299,9 +299,9 @@ export function constructMerkleTree(rawLeaves: Omit<MerkleLeaf, 'leafHash' | 'me
     leaves: finalLeaves,
     treeLayers,
     lastSealedAt: new Date().toISOString(),
-    hsmRootCa: 'KSA-ATLAS-AGRI-ROOT-CA#0844',
+    hsmRootCa: 'DZ-ATLAS-AGRI-ROOT-CA#0844',
     algorithm: 'SHA-256 / Binary Merkle Tree (RFC 6962)',
-    complianceStandard: 'SOP-SOL-OPS-2026-V1 & NCA Sovereign Cloud Standard v2.0'
+    complianceStandard: 'SOP-SOL-OPS-2026-V1 & ANSS DZ Sovereign Cloud Standard v2.0'
   };
 }
 
@@ -428,14 +428,14 @@ export const BASE_LEDGER_LEAVES: Omit<MerkleLeaf, 'leafHash' | 'merkleProof' | '
     parcelCode: 'PIVOT-01',
     summary: 'Digital Quality Passport BATCH-WHT-2026-Q3-089 cryptographically sealed with ECDSA-secp256k1',
     summaryAr: 'اعتماد وتوليد الختم التشفيري لبطاقة الجودة BATCH-WHT-2026-Q3-089 وفق معيار secp256k1',
-    signerKey: 'KSA-ATLAS-AGRI-ROOT-CA#0844',
+    signerKey: 'DZ-ATLAS-AGRI-ROOT-CA#0844',
     rawPayload: {
       batch_id: 'BATCH-WHT-2026-Q3-089',
       crop_batch_id: 'BATCH-WHT-2026-Q3-089',
       variety: 'Durum Wheat (Sakha 95)',
       purity_percent: 98.4,
       water_stress_free_index: 97.8,
-      silo_destination: 'SILO-STRAT-KHARJ-01'
+      silo_destination: 'SILO-STRAT-MITIDJA-01'
     }
   },
   {
@@ -560,14 +560,14 @@ export const LIVE_BATCH_CATALOG: Omit<MerkleLeaf, 'leafHash' | 'merkleProof' | '
     eventType: 'EVENT_SILO_STRATEGIC_RECEIPT',
     dataBatch: 'BATCH-SILO-INTAKE-089',
     txHash: '0x45db2c7f6e5b8a4d0c3f7b1e5a9d3c6b8f0d2e4a6b8c2d4f6a8b0c2e4f6a8b0c',
-    assetId: 'silo-strat-kharj-01',
+    assetId: 'silo-strat-mitidja-01',
     parcelCode: 'SILO-01',
     summary: 'Grain Silo intake batch 450T Durum Wheat, NIR moisture 11.2%, grade #1 confirmed',
-    summaryAr: 'توريد دفعة قمح صلب 450 طناً لصوامع الخرج؛ رطوبة 11.2% ومطابقة درجة أولى ممتازة',
+    summaryAr: 'توريد دفعة قمح صلب 450 طناً لصوامع متيجة وقسنطينة؛ رطوبة 11.2% ومطابقة ممتازة',
     signerKey: 'HSM-ATLAS-SILO-INTAKE#011',
     rawPayload: {
       batch_id: 'BATCH-SILO-INTAKE-089',
-      silo_complex: 'SILO-STRAT-KHARJ-01',
+      silo_complex: 'SILO-STRAT-MITIDJA-01',
       net_weight_metric_tons: 450.8,
       nir_moisture_percent: 11.2,
       protein_dry_basis: 14.8,
@@ -652,7 +652,7 @@ export const LIVE_BATCH_CATALOG: Omit<MerkleLeaf, 'leafHash' | 'merkleProof' | '
     parcelCode: 'CLUSTER-CORE',
     summary: 'Periodic HSM Master Key attestation and zero-knowledge ledger certificate sealed',
     summaryAr: 'اعتماد مراسم تدقيق مفتاح HSM الرئيسي وشهادة إثبات عدم المعرفة (Zero-Knowledge)',
-    signerKey: 'KSA-NATIONAL-HSM-LEVEL4#9901',
+    signerKey: 'DZ-NATIONAL-HSM-LEVEL4#9901',
     rawPayload: {
       batch_id: 'BATCH-HSM-ATTEST-099',
       hsm_firmware_version: 'v4.18.2-SECURE',

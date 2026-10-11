@@ -791,15 +791,15 @@ export const SovereignCloudPanel: React.FC<SovereignCloudPanelProps> = ({
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <span>{isAr ? 'خريطة وإدارة العقد السحابية السيادية' : 'Sovereign Cloud Nodes & Data Residency'}</span>
+                    <span>{isAr ? 'منظومة الأقطاب السيادية الأربعة للبيانات الوطنية' : 'The 4 National Sovereign Data Poles'}</span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
-                      {isAr ? 'الجزائر • قارة إفريقيا' : 'Algeria • Africa Region'}
+                      {isAr ? 'الأقطاب الأربعة • الجزائر' : '4 Sovereign Poles • Algeria'}
                     </span>
                   </h3>
                   <p className="text-xs text-slate-400">
                     {isAr
-                      ? 'العقدة الأساسية المعينة للمنظومة هي مركز الجزائر (DZ-North-1) لضمان السيادة الوطنية وتوطين البيانات.'
-                      : 'Primary designated cluster node is Algiers Sovereign Center (DZ-North-1) ensuring continental data residency.'}
+                      ? 'شبكة الأقطاب السيادية الأربعة المعتمدة حصراً: وهران (الغرب)، العاصمة (المركز)، قسنطينة (الشرق)، وورقلة (الجنوب والصحراء الكبرى).'
+                      : 'The 4 designated national sovereign poles: Oran (West), Algiers (Center), Constantine (East), and Ouargla (Sahara & South).'}
                   </p>
                 </div>
               </div>
@@ -831,7 +831,7 @@ export const SovereignCloudPanel: React.FC<SovereignCloudPanelProps> = ({
                           <span className="font-bold text-white font-mono text-sm">{node.code}</span>
                           {node.isPrimary && (
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                              {isAr ? 'العقدة الأساسية (الجزائر - إفريقيا)' : 'PRIMARY NODE (Africa)'}
+                              {isAr ? 'القطب المركزي الأساسي (الجزائر العاصمة)' : 'PRIMARY NATIONAL POLE (Algiers)'}
                             </span>
                           )}
                           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-850 text-slate-300 border border-slate-700">

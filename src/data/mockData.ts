@@ -12,17 +12,19 @@ import {
   AgriGisWilayaPole,
   AlsatSatelliteMission,
   OdasConcession,
-  WaterTableSensorNode
+  WaterTableSensorNode,
+  AirliftMission,
+  CowIndividualPedigree
 } from '../types/ecosystem';
 
 export const INITIAL_PARCELS: ParcelAsset[] = [
   {
     asset_id: "8f7b3a1c-9e2d-4f1a-b6c8-0d1e2f3a4b5c",
     code: "PIVOT-01",
-    name: "محور الخرج الشمالي 01",
-    nameEn: "Al-Kharj North Pivot 01",
-    region: "الخرج، منطقة الرياض",
-    regionEn: "Al-Kharj, Riyadh Province",
+    name: "محور المنيعة الشمالي 01 (امتياز ODAS)",
+    nameEn: "El Menia North Pivot 01 (ODAS)",
+    region: "المنيعة، الصحراء الجزائرية",
+    regionEn: "El Menia, Algerian Sahara",
     cropType: "قمح صلب (سخا 95)",
     cropTypeEn: "Durum Wheat (Sakha 95)",
     crop_batch_id: "BATCH-WHT-2026-Q3-089",
@@ -59,10 +61,10 @@ export const INITIAL_PARCELS: ParcelAsset[] = [
   {
     asset_id: "3e5a7b8c-1f4d-4a9e-8c3b-7a6f5e4d3c2b",
     code: "PIVOT-02",
-    name: "محور القصيم المروي 02",
-    nameEn: "Al-Qassim Irrigated Pivot 02",
-    region: "عنيزة، منطقة القصيم",
-    regionEn: "Unaizah, Al-Qassim Province",
+    name: "محور بسكرة المروي 02",
+    nameEn: "Biskra Irrigated Pivot 02",
+    region: "طولقة، ولاية بسكرة",
+    regionEn: "Tolga, Biskra Province",
     cropType: "برسيم حجازي عضوي",
     cropTypeEn: "Organic Alfalfa",
     crop_batch_id: "BATCH-ALF-2026-Q2-044",
@@ -107,10 +109,10 @@ export const INITIAL_PARCELS: ParcelAsset[] = [
   {
     asset_id: "9c1d2e3f-4a5b-6c7d-8e9f-0a1b2c3d4e5f",
     code: "PIVOT-03",
-    name: "محور حائل الإنتاجي 03",
-    nameEn: "Hail Production Pivot 03",
-    region: "بقعاء، منطقة حائل",
-    regionEn: "Baqaa, Hail Province",
+    name: "محور قسنطينة الإنتاجي 03",
+    nameEn: "Constantine Cereal Pivot 03",
+    region: "الخروب، ولاية قسنطينة",
+    regionEn: "El Khroub, Constantine Province",
     cropType: "شعير علفي (صنف هيدرا)",
     cropTypeEn: "Fodder Barley (Hydra Var)",
     crop_batch_id: "BATCH-BRL-2026-Q3-112",
@@ -147,10 +149,10 @@ export const INITIAL_PARCELS: ParcelAsset[] = [
   {
     asset_id: "5b6c7d8e-9f0a-1b2c-3d4e-5f6a7b8c9d0e",
     code: "PIVOT-04",
-    name: "محور وادي الدواسر الجنوبي 04",
-    nameEn: "Wadi Al-Dawasir South Pivot 04",
-    region: "السليل، وادي الدواسر",
-    regionEn: "Sulayyil, Wadi Al-Dawasir",
+    name: "محور وادي سوف الجنوبي 04",
+    nameEn: "El Oued South Pivot 04",
+    region: "قمار، ولاية الوادي",
+    regionEn: "Guemar, El Oued Province",
     cropType: "ذرة صفراء هجين",
     cropTypeEn: "Hybrid Yellow Corn",
     crop_batch_id: "BATCH-CRN-2026-Q3-031",
@@ -314,7 +316,7 @@ export const INITIAL_WORK_ORDERS: WorkOrder[] = [
     order_id: "WO-2026-1002",
     trigger_event_id: "EVT-STRESS-9921",
     asset_id: "3e5a7b8c-1f4d-4a9e-8c3b-7a6f5e4d3c2b",
-    assetName: "محور القصيم المروي 02",
+    assetName: "محور بسكرة المروي 02",
     title: "صيانة طارئة لاختناق فوهات الرش وفقدان ضغط الماء",
     titleEn: "Emergency Nozzle Clearance & Hydraulic Pressure Drop",
     description: "رصد انخفاض مؤشر NDVI إلى 0.38 مع هبوط ضغط الرش إلى 1.8 بار في الربع الشمالي الشرقي. تم تحديد Bounding Box وتكليف فني الري الميداني.",
@@ -322,7 +324,7 @@ export const INITIAL_WORK_ORDERS: WorkOrder[] = [
     severity: "HIGH",
     status: "DISPATCHED",
     assignedFleetId: "FLEET-GPS-TRK-01",
-    assignedTechnician: "م. فهد العتيبي (فريق الري المتقدم)",
+    assignedTechnician: "م. إسلام بوجمعة (فريق الري والصيانة المتقدم)",
     coordinates: [24.189, 47.341],
     bbox: {
       minLat: 24.187,
@@ -337,21 +339,21 @@ export const INITIAL_WORK_ORDERS: WorkOrder[] = [
     slaMaxMinutes: 15,
     slaRemainingMinutes: 7,
     photoEvidenceUrl: "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=400&q=80",
-    technicianSignature: "فهد العتيبي - اعتماد ميداني",
+    technicianSignature: "إسلام بوجمعة - اعتماد ميداني",
     isOfflineSynced: true
   },
   {
     order_id: "WO-2026-0988",
     trigger_event_id: "EVT-GRAZ-4410",
     asset_id: "HERD-SHP-02",
-    assetName: "قطيع النعيمي المحسن (المنطقة B)",
+    assetName: "قطيع أولاد جلال المحسن (المنطقة B - الهضاب العليا)",
     title: "تطبيق الرعي التناوبي الفوري وتغيير مسار القطيع",
     titleEn: "Rotational Grazing Enforcement & Herd Route Diversion",
     description: "مطابقة موقع القطيع مع خريطة الكثافة النباتية SolVision أظهرت انخفاض الكتلة الحيوية بنسبة 48%. يتطلب توجيه الرعاة لنقل القطيع للمنطقة D.",
     descriptionEn: "Matching RFID/GPS positions with SolVision vegetative biomass indicates 48% depletion. Urgent route diversion to pasture Zone D required.",
     severity: "CRITICAL",
     status: "PENDING",
-    assignedTechnician: "د. هاني السالم (مشرف إدارة المراعي الطبيعية)",
+    assignedTechnician: "د. هاني السعيد (مشرف إدارة المراعي وديوان الحبوب)",
     coordinates: [24.170, 47.362],
     bbox: {
       minLat: 24.166,
@@ -366,7 +368,7 @@ export const INITIAL_WORK_ORDERS: WorkOrder[] = [
     slaMaxMinutes: 30,
     slaRemainingMinutes: 19,
     photoEvidenceUrl: "https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=400&q=80",
-    technicianSignature: "د. هاني السالم - مصادقة مسار الرعي",
+    technicianSignature: "د. هاني السعيد - مصادقة مسار الرعي",
     isOfflineSynced: true
   }
 ];
@@ -466,13 +468,13 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
   {
     crop_batch_id: "BATCH-WHT-2026-Q3-089",
     asset_id: "8f7b3a1c-9e2d-4f1a-b6c8-0d1e2f3a4b5c",
-    parcelName: "محور الخرج الشمالي 01",
-    parcelNameEn: "Al-Kharj North Pivot 01",
+    parcelName: "محور المنيعة الشمالي 01 (امتياز ODAS)",
+    parcelNameEn: "El Menia North Pivot 01 (ODAS)",
     cropVariety: "قمح صلب عالي البروتين (سخا 95)",
     cropVarietyEn: "High-Protein Durum Wheat (Sakha 95)",
     sowingDate: "2026-07-15",
     harvestDate: "2026-11-28 (مجدول)",
-    targetSiloId: "SILO-SOV-RYD-04 (صوامع الرياض السيادية)",
+    targetSiloId: "SILO-SOV-ALG-01 (صوامع قسنطينة ومتيجة الاستراتيجية)",
     averageNdviGrowth: 0.76,
     waterStressFreeIndex: 96.2,
     soilPurityIndex: 98.4,
@@ -480,7 +482,7 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
     carbonFootprintKgPerTon: 142.5,
     cryptographicSeal: {
       hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      issuerSovereignKey: "KSA-ATLAS-AGRI-ROOT-CA#0921",
+      issuerSovereignKey: "DZ-ATLAS-AGRI-ROOT-CA#0921",
       merkleRoot: "0x89fbc0214a51e6d98c21a4f02891bbec3820914a",
       timestamp: "2026-10-06T17:20:15Z",
       verifiedOnChain: true
@@ -491,8 +493,8 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
         stageAr: "أصل البذور واعتماد الصنف",
         stageEn: "Certified Seed Origin",
         timestamp: "2026-07-15 09:30",
-        location: "محطة إكثار البذور المعتمدة، الرياض",
-        verifier: "هيئة الأمن الغذائي والزراعي",
+        location: "محطة إكثار البذور المعتمدة (ITGC)، قسنطينة / سيدي بلعباس",
+        verifier: "الديوان الوطني المهني للحبوب (OAIC)",
         status: "VERIFIED"
       },
       {
@@ -500,16 +502,16 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
         stageAr: "الإنبات وتحليل كيمياء التربة",
         stageEn: "Germination & Soil Chemistry",
         timestamp: "2026-08-02 11:15",
-        location: "مختبر AtlasCloud الحقلي - الخرج",
-        verifier: "مختبرات المركز الوطني للزراعة",
+        location: "مختبر AtlasCloud الحقلي - المنيعة",
+        verifier: "المعهد الوطني للأراضي والسقي (INSID)",
         status: "VERIFIED"
       },
       {
         stage: "SPECTRAL_MONITORING",
-        stageAr: "الرصد الطيفي الفضائي (SolVision)",
-        stageEn: "Satellite Spectral Health (SolVision)",
+        stageAr: "الرصد الطيفي الفضائي (SolVision / Alsat)",
+        stageEn: "Satellite Spectral Health (SolVision / Alsat)",
         timestamp: "2026-10-06 14:00",
-        location: "Sentinel-2 MSI Orbit 44 / خوارزميات SolVision",
+        location: "Sentinel-2 MSI Orbit 44 / Alsat-1B / خوارزميات SolVision",
         verifier: "محرك SolVision للتحليل الطيفي اللحظي",
         status: "CURRENT"
       },
@@ -527,7 +529,7 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
         stageAr: "التخزين في الصومعة السيادية والتشفير النهائي",
         stageEn: "Sovereign Silo Storage & Vault Sealing",
         timestamp: "2026-11-29 16:30",
-        location: "صوامع الحبوب الاستراتيجية - الخرج",
+        location: "صوامع الحبوب الاستراتيجية - قسنطينة / الجزائر",
         verifier: "سحابة AtlasCloud السيادية للتوثيق",
         status: "SCHEDULED"
       }
@@ -536,13 +538,13 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
   {
     crop_batch_id: "BATCH-ALF-2026-Q2-044",
     asset_id: "3e5a7b8c-1f4d-4a9e-8c3b-7a6f5e4d3c2b",
-    parcelName: "محور القصيم المروي 02",
-    parcelNameEn: "Al-Qassim Irrigated Pivot 02",
+    parcelName: "محور بسكرة المروي 02",
+    parcelNameEn: "Biskra Irrigated Pivot 02",
     cropVariety: "برسيم حجازي عضوي درجة أولى",
     cropVarietyEn: "Premium Organic Alfalfa",
     sowingDate: "2026-06-10",
     harvestDate: "2026-10-30 (مجدول بعد إصلاح الإجهاد)",
-    targetSiloId: "SILO-FODDER-QSM-01 (مستودع الأعلاف عنيزة)",
+    targetSiloId: "SILO-FODDER-BSK-01 (مستودع الأعلاف الاستراتيجي - بسكرة)",
     averageNdviGrowth: 0.58,
     waterStressFreeIndex: 82.4,
     soilPurityIndex: 94.1,
@@ -550,7 +552,7 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
     carbonFootprintKgPerTon: 98.2,
     cryptographicSeal: {
       hash: "74b87337454200d4d33f80c4663dc5e5ff1b5f106fd09071064fb2bc7c20ea88",
-      issuerSovereignKey: "KSA-ATLAS-AGRI-ROOT-CA#0844",
+      issuerSovereignKey: "DZ-ATLAS-AGRI-ROOT-CA#0844",
       merkleRoot: "0x39fae1104c92b7e19a44c9b20148efdc29104b31",
       timestamp: "2026-10-06T15:10:00Z",
       verifiedOnChain: true
@@ -558,11 +560,11 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
     traceabilityStages: [
       {
         stage: "SEED",
-        stageAr: "بذور حجازية نقية 99.8%",
-        stageEn: "Pure Hijazi Seed Variety 99.8%",
+        stageAr: "بذور علفية نقية 99.8%",
+        stageEn: "Pure Forage Seed Variety 99.8%",
         timestamp: "2026-06-10 08:00",
-        location: "بنك البذور الوطني، القصيم",
-        verifier: "مركز بحوث المراعي والزراعة",
+        location: "بنك البذور الوطني - المعهد التقني للمحاصيل الكبرى (ITGC)",
+        verifier: "مركز بحوث المراعي والزراعة الصحراوية",
         status: "VERIFIED"
       },
       {
@@ -570,7 +572,7 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
         stageAr: "مرحلة التفريع والتثبيت الحيوي",
         stageEn: "Branching & Rhizobial Inoculation",
         timestamp: "2026-06-28 10:00",
-        location: "عنيزة، القصيم",
+        location: "طولقة، بسكرة",
         verifier: "المرشد الزراعي الميداني Kareema",
         status: "VERIFIED"
       },
@@ -579,7 +581,7 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
         stageAr: "تنبيه إجهاد ري موضعي نشط",
         stageEn: "Active Localized Irrigation Stress Detected",
         timestamp: "2026-10-06 16:45",
-        location: "محور القصيم 02 - الربع NE",
+        location: "محور بسكرة 02 - الربع NE",
         verifier: "أمر عمل Kareema WO-2026-1002 قيد المعالجة",
         status: "CURRENT"
       },
@@ -588,7 +590,7 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
         stageAr: "الحشة الرابعة مجدولة",
         stageEn: "4th Cutting Harvest Scheduled",
         timestamp: "2026-10-30 06:00",
-        location: "محور القصيم 02",
+        location: "محور بسكرة 02",
         verifier: "أسطول Kareema 04",
         status: "SCHEDULED"
       },
@@ -597,7 +599,7 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
         stageAr: "التخزين والكبس البالي الرقمي",
         stageEn: "Storage & Digital RFID Bale Tagging",
         timestamp: "2026-11-01 12:00",
-        location: "صوامع عنيزة",
+        location: "صوامع ومستودعات بسكرة",
         verifier: "سحابة AtlasCloud",
         status: "SCHEDULED"
       }
@@ -608,69 +610,87 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
 export const SOVEREIGN_NODES: SovereignNodeInfo[] = [
   {
     id: "DZ-NORTH-1",
-    code: "DZ-North-1 (Algiers / الجزائر)",
-    nameAr: "مركز الجزائر للبيانات السيادية (DZ-North-1) - قارة إفريقيا",
-    nameEn: "Algiers Sovereign Datacenter (DZ-North-1) - Africa",
+    code: "DZ-North-1 (Algiers / الجزائر العاصمة)",
+    nameAr: "مركز الجزائر العاصمة للبيانات السيادية (DZ-North-1) - القطب الوطني المركزي",
+    nameEn: "Algiers National Sovereign Datacenter (DZ-North-1) - Central Core Vault",
     cityAr: "الجزائر العاصمة",
     cityEn: "Algiers",
     countryAr: "الجمهورية الجزائرية الديمقراطية الشعبية",
     countryEn: "Democratic Republic of Algeria",
-    continentAr: "قارة إفريقيا",
-    continentEn: "Africa",
+    continentAr: "قطب الوسط والقيادة المركزية",
+    continentEn: "Central National Pole",
     isPrimary: true,
     status: "ONLINE",
-    uptimePercent: 99.998,
-    latencyMs: 8,
+    uptimePercent: 99.999,
+    latencyMs: 6,
     postGisEndpoint: "https://dz-algiers.atlascloud.sovereign:5432/geodatabase",
-    tierClassification: "Tier IV National Sovereign Vault"
+    tierClassification: "Tier IV National Primary Sovereign Vault"
   },
   {
     id: "DZ-WEST-2",
     code: "DZ-West-2 (Oran / وهران)",
-    nameAr: "مركز وهران الاحتياطي السيادي (DZ-West-2) - قارة إفريقيا",
-    nameEn: "Oran Sovereign Backup Vault (DZ-West-2) - Africa",
+    nameAr: "مركز وهران للبيانات السيادية (DZ-West-2) - قطب الغرب الجزائري",
+    nameEn: "Oran Sovereign Vault (DZ-West-2) - West Regional Pole",
     cityAr: "وهران",
     cityEn: "Oran",
     countryAr: "الجمهورية الجزائرية الديمقراطية الشعبية",
     countryEn: "Algeria",
-    continentAr: "قارة إفريقيا",
-    continentEn: "Africa",
+    continentAr: "قطب الغرب الجزائري",
+    continentEn: "West Regional Pole",
+    isPrimary: false,
+    status: "ONLINE",
+    uptimePercent: 99.996,
+    latencyMs: 11,
+    postGisEndpoint: "https://dz-oran.atlascloud.sovereign:5432/geodatabase",
+    tierClassification: "Tier III+ Maritime & Disaster Recovery Vault"
+  },
+  {
+    id: "DZ-EAST-3",
+    code: "DZ-East-3 (Constantine / قسنطينة)",
+    nameAr: "مركز قسنطينة للبيانات السيادية (DZ-East-3) - قطب الشرق والهضاب العليا",
+    nameEn: "Constantine Sovereign Datacenter (DZ-East-3) - East & High Plateaus Pole",
+    cityAr: "قسنطينة",
+    cityEn: "Constantine",
+    countryAr: "الجمهورية الجزائرية الديمقراطية الشعبية",
+    countryEn: "Algeria",
+    continentAr: "قطب الشرق والهضاب العليا",
+    continentEn: "East & High Plateaus Pole",
     isPrimary: false,
     status: "ONLINE",
     uptimePercent: 99.995,
-    latencyMs: 12,
-    postGisEndpoint: "https://dz-oran-mirror.atlascloud.sovereign:5432/geodatabase",
-    tierClassification: "Tier III+ Disaster Recovery Vault"
+    latencyMs: 13,
+    postGisEndpoint: "https://dz-constantine.atlascloud.sovereign:5432/geodatabase",
+    tierClassification: "Tier III+ Cereal Agro-Basin Sovereign Vault"
   },
   {
-    id: "KSA-CENTRAL-1",
-    code: "KSA-Central-1 (Riyadh / الرياض)",
-    nameAr: "مركز الرياض للبيانات السيادية (KSA-Central-1) - الشرق الأوسط",
-    nameEn: "Riyadh Sovereign Datacenter (KSA-Central-1) - Middle East",
-    cityAr: "الرياض",
-    cityEn: "Riyadh",
-    countryAr: "المملكة العربية السعودية",
-    countryEn: "Saudi Arabia",
-    continentAr: "الشرق الأوسط",
-    continentEn: "Middle East",
+    id: "DZ-SOUTH-4",
+    code: "DZ-South-4 (Ouargla / ورقلة)",
+    nameAr: "مركز ورقلة للبيانات السيادية (DZ-South-4) - قطب الجنوب والصحراء الكبرى",
+    nameEn: "Ouargla Sovereign Datacenter (DZ-South-4) - Sahara & ODAS Concessions Pole",
+    cityAr: "ورقلة",
+    cityEn: "Ouargla",
+    countryAr: "الجمهورية الجزائرية الديمقراطية الشعبية",
+    countryEn: "Algeria",
+    continentAr: "قطب الجنوب والصحراء الكبرى",
+    continentEn: "South & Sahara Basin Pole",
     isPrimary: false,
     status: "ONLINE",
-    uptimePercent: 99.998,
-    latencyMs: 34,
-    postGisEndpoint: "https://ksa-riyadh.atlascloud.sovereign:5432/geodatabase",
-    tierClassification: "Tier IV Federated Sovereign Vault"
+    uptimePercent: 99.997,
+    latencyMs: 16,
+    postGisEndpoint: "https://dz-ouargla.atlascloud.sovereign:5432/geodatabase",
+    tierClassification: "Tier IV Deep Aquifer & Mega-Farming Vault"
   }
 ];
 
 export const INITIAL_SOVEREIGN_STATUS: SovereignCloudStatus = {
-  activeNode: "مركز الجزائر للبيانات السيادية (DZ-North-1) - قارة إفريقيا",
-  activeNodeEn: "Algiers Sovereign Datacenter (DZ-North-1) - Africa",
+  activeNode: "مركز الجزائر العاصمة للبيانات السيادية (DZ-North-1) - القطب المركزي",
+  activeNodeEn: "Algiers National Sovereign Datacenter (DZ-North-1) - Central Vault",
   clusterHealth: "OPTIMAL",
   eventBusThroughputMsgSec: 4280,
   postGisRecordsCount: 1485290,
   encryptionMode: "AES-256-GCM (National Sovereign Standard)",
-  sovereignDataResidency: "الجمهورية الجزائرية الديمقراطية الشعبية - قارة إفريقيا (العقدة الأساسية / DZ-North-1)",
-  geoServerWmsLatencyMs: 8,
+  sovereignDataResidency: "الجمهورية الجزائرية الديمقراطية الشعبية (الشبكة السيادية الرباعية: العاصمة، وهران، قسنطينة، ورقلة)",
+  geoServerWmsLatencyMs: 6,
   storageUsageTb: 84.6,
   storageTotalTb: 250.0
 };
@@ -1469,5 +1489,415 @@ export const ALGERIA_WATER_TABLE_SENSORS: WaterTableSensorNode[] = [
   }
 ];
 
-
-
+// SOL GLOBAL • US-DZ AIRLIFT TRACE MISSIONS
+export const US_DZ_AIRLIFT_MISSIONS: AirliftMission[] = [
+  {
+    flightId: "SOL-AIR-TX01",
+    status: "AIRBORNE",
+    missionNameAr: "الجسر الاستراتيجي الفوج 01: تكساس ➔ المنيعة (عبر مطار دار البيضاء DAUA)",
+    missionNameEn: "Strategic Airlift Batch 01: Texas to El Menia Mega-Dairy",
+    cargo: {
+      headCount: 220,
+      breed: "HOLSTEIN_HEIFER",
+      breedLabelAr: "أبقار هولشتاين عشار عالية الإدرار (تأقلم صحراوي)",
+      breedLabelEn: "Pregnant Holstein Heifers (High Genomic Merit)",
+      avgWeightKg: 585,
+      gestationStageWeeks: 19,
+      originState: "Texas",
+      originRanch: "Panhandle Elite Dairy Genetics (Amarillo, TX)",
+      usdaHealthCertNumber: "USDA-APHIS-VET-2026-TX-99042",
+      rfidRangeStart: "840-003-921-000-001",
+      rfidRangeEnd: "840-003-921-000-220",
+      averageGenomicMeritIndex: 2890,
+      waterConsumptionRateLitersPerHour: 1450
+    },
+    telemetry: {
+      callsign: "SOL-DZ-747F",
+      aircraftType: "Boeing 747-400F",
+      operator: "SOL Global Strategic Logistics / Air Cargo Int.",
+      originIcao: "KDAL",
+      originName: "Dallas/Fort Worth (KDAL - Texas)",
+      destIcao: "DAUA",
+      destNameAr: "مطار توات الشيخ سيدي محمد بلكبير (أدرار) / دار البيضاء",
+      destNameEn: "Adrar Touat Cheikh Sidi Mohamed Belkebir (DAUA)",
+      destWilayaNumber: 1,
+      currentCoordinates: [34.55, -18.25], // Over Mid-Atlantic approaching African coastline
+      altitudeFeet: 35000,
+      groundSpeedKnots: 512,
+      headingDeg: 86,
+      cabinTemperatureCelsius: 16.8, // Cool ideal livestock climate
+      cabinHumidityPercent: 54,
+      cabinCo2Ppm: 780,
+      ventilationStatus: "OPTIMAL_CIRCULATION",
+      feedWaterSupplyRemainingHours: 18.5,
+      estimatedArrivalUtc: "2026-10-12 04:30 UTC",
+      routeProgressPercent: 68,
+      flightPathWaypoints: [
+        [32.89, -97.04], // DFW
+        [35.12, -75.40], // Coast NC
+        [37.20, -50.10], // Atlantic
+        [34.55, -18.25], // Current
+        [31.60, -8.00],  // Entering North Africa
+        [27.84, -0.19]   // Adrar DAUA
+      ]
+    },
+    receptionHub: {
+      quarantineStationId: "DZ-QUAR-ADR-01",
+      airportIcao: "DAUA",
+      stationNameAr: "المحطة السيادية للحجر البيطري الاستراتيجي - مطار أدرار",
+      stationNameEn: "Strategic Veterinary Quarantine Terminal - Adrar",
+      wilayaAr: "أدرار / تيميمون",
+      veterinarySupervisors: [
+        "د. كريم بن زاهي (كبير الأطباء البيطريين - وزارة الفلاحة والتنمية الريفية)",
+        "د. سارة المنصوري (أخصائية سلامة القطيع الوراثي - معهد ITGC)"
+      ],
+      quarantineCapacityHeads: 1200,
+      activeOccupancyHeads: 440,
+      targetMegaDairyAr: "المجمع الحليبي الصحراوي الكبرى - محيط طماست (أدرار)",
+      targetMegaDairyEn: "Tamest Mega-Dairy & Fodder Complex (Adrar)",
+      transportFleetAssignedCount: 12,
+      isolationProtocolDays: 21,
+      biosecurityLevel: "STRICT_QUARANTINE_L4"
+    },
+    serverConnectionStatus: "CONNECTED_REALTIME",
+    satelliteDataRelay: "INMARSAT_AERO_04",
+    lastTelemetryPingSec: 4,
+    sampledPedigreeList: [
+      {
+        tagId: "US-DZ-TX-840001",
+        rfidChipId: "RFID-840-003-921-001",
+        breed: "HOLSTEIN_HEIFER",
+        sireName: "PEAK ALTAGOPRO-ET (TPI +3012)",
+        damName: "PENN-TEXAS RUBICON HEIFER-441",
+        expectedAnnualMilkYieldLiters: 12450,
+        heatToleranceScore: 92,
+        pregnancyStatus: "عشار 19 أسبوع (تم الفحص بالموجات الصوتية)",
+        genomicProfileScore: 94.6,
+        usdaExportSeal: "USDA-APHIS-STAMP-7890-TX",
+        dzMinistryHealthApproval: "DZ-MADR-SANTE-2026-0811",
+        assignedAirBridgeFlight: "SOL-AIR-TX01",
+        currentLocationStage: "IN_TRANSIT_AIR",
+        currentHeartRateBpm: 72,
+        temperatureCelsius: 38.6
+      },
+      {
+        tagId: "US-DZ-TX-840002",
+        rfidChipId: "RFID-840-003-921-002",
+        breed: "HOLSTEIN_HEIFER",
+        sireName: "S-S-I PR RENEGADE-ET (TPI +2980)",
+        damName: "TX-LONESTAR DELTA-LAMBDA-908",
+        expectedAnnualMilkYieldLiters: 11980,
+        heatToleranceScore: 90,
+        pregnancyStatus: "عشار 20 أسبوع (جنين أنثى موثق)",
+        genomicProfileScore: 93.1,
+        usdaExportSeal: "USDA-APHIS-STAMP-7891-TX",
+        dzMinistryHealthApproval: "DZ-MADR-SANTE-2026-0812",
+        assignedAirBridgeFlight: "SOL-AIR-TX01",
+        currentLocationStage: "IN_TRANSIT_AIR",
+        currentHeartRateBpm: 70,
+        temperatureCelsius: 38.5
+      },
+      {
+        tagId: "US-DZ-TX-840003",
+        rfidChipId: "RFID-840-003-921-003",
+        breed: "HOLSTEIN_HEIFER",
+        sireName: "AOT SILVER HELIX-ET",
+        damName: "PANHANDLE DUKE HEIFER-112",
+        expectedAnnualMilkYieldLiters: 12800,
+        heatToleranceScore: 94,
+        pregnancyStatus: "عشار 18 أسبوع",
+        genomicProfileScore: 96.2,
+        usdaExportSeal: "USDA-APHIS-STAMP-7892-TX",
+        dzMinistryHealthApproval: "DZ-MADR-SANTE-2026-0813",
+        assignedAirBridgeFlight: "SOL-AIR-TX01",
+        currentLocationStage: "IN_TRANSIT_AIR",
+        currentHeartRateBpm: 74,
+        temperatureCelsius: 38.7
+      }
+    ]
+  },
+  {
+    flightId: "SOL-AIR-AZ02",
+    status: "APPROACHING",
+    missionNameAr: "الجسر الاستراتيجي الفوج 02: أريزونا ➔ ولاية المنيعة (مطار المنيعة DAUE)",
+    missionNameEn: "Strategic Airlift Batch 02: Arizona to El Menia Dairy Hub",
+    cargo: {
+      headCount: 205,
+      breed: "BROWN_SWISS_ARID",
+      breedLabelAr: "أبقار براون سويس المتأقلمة مع المناخ الجاف والحار",
+      breedLabelEn: "Arid-Adapted Brown Swiss Heifers",
+      avgWeightKg: 560,
+      gestationStageWeeks: 17,
+      originState: "Arizona",
+      originRanch: "Sonoran Desert Genetics & Dairy Center (Casa Grande, AZ)",
+      usdaHealthCertNumber: "USDA-APHIS-VET-2026-AZ-41008",
+      rfidRangeStart: "840-003-718-000-001",
+      rfidRangeEnd: "840-003-718-000-205",
+      averageGenomicMeritIndex: 2750,
+      waterConsumptionRateLitersPerHour: 1320
+    },
+    telemetry: {
+      callsign: "SOL-DZ-777F",
+      aircraftType: "Boeing 777F",
+      operator: "SOL Global Airlift Command",
+      originIcao: "KPHX",
+      originName: "Phoenix Sky Harbor (KPHX - Arizona)",
+      destIcao: "DAUE",
+      destNameAr: "مطار المنيعة (DAUE / ELG) - قطب الواحات",
+      destNameEn: "El Menia Airport (DAUE / ELG)",
+      destWilayaNumber: 58,
+      currentCoordinates: [30.58, 2.88], // Approaching Algeria over Ghardaia / El Menia airspace
+      altitudeFeet: 12000,
+      groundSpeedKnots: 340,
+      headingDeg: 165,
+      cabinTemperatureCelsius: 17.2,
+      cabinHumidityPercent: 48,
+      cabinCo2Ppm: 690,
+      ventilationStatus: "OPTIMAL_CIRCULATION",
+      feedWaterSupplyRemainingHours: 12.0,
+      estimatedArrivalUtc: "2026-10-11 21:15 UTC (بعد 25 دقيقة)",
+      routeProgressPercent: 94,
+      flightPathWaypoints: [
+        [33.43, -112.01], // PHX
+        [36.10, -85.20],  // Over US
+        [38.50, -42.00],  // Atlantic
+        [35.00, -5.00],   // North Africa
+        [30.58, 2.88]     // Approaching El Menia
+      ]
+    },
+    receptionHub: {
+      quarantineStationId: "DZ-QUAR-MEN-02",
+      airportIcao: "DAUE",
+      stationNameAr: "حظيرة الاستقبال والحجر الصحي البيطري - مطار المنيعة",
+      stationNameEn: "El Menia Veterinary Quarantine Facility",
+      wilayaAr: "المنيعة (ولاية 58)",
+      veterinarySupervisors: [
+        "د. لخضر قاسمي (مفتش بيطري ولائي - المنيعة)",
+        "د. نادية بولعراس (باحثة في فيزيولوجيا الأبقار الصحراوية)"
+      ],
+      quarantineCapacityHeads: 850,
+      activeOccupancyHeads: 180,
+      targetMegaDairyAr: "مجمع حليب الصحراء التابع لـ ODAS - حاسي الفحل / المنيعة",
+      targetMegaDairyEn: "ODAS Saharan Milk Agro-Industrial Hub (Hassi El Gara)",
+      transportFleetAssignedCount: 10,
+      isolationProtocolDays: 21,
+      biosecurityLevel: "STRICT_QUARANTINE_L4"
+    },
+    serverConnectionStatus: "CONNECTED_REALTIME",
+    satelliteDataRelay: "ALSAT_GROUND_LINK",
+    lastTelemetryPingSec: 2,
+    sampledPedigreeList: [
+      {
+        tagId: "US-DZ-AZ-718001",
+        rfidChipId: "RFID-840-003-718-001",
+        breed: "BROWN_SWISS_ARID",
+        sireName: "HILLTOP ACRES DYNAMITE-ET",
+        damName: "SONORAN DESERT HEIFER-89",
+        expectedAnnualMilkYieldLiters: 10800,
+        heatToleranceScore: 98,
+        pregnancyStatus: "عشار 17 أسبوع (ممتازة)",
+        genomicProfileScore: 92.4,
+        usdaExportSeal: "USDA-APHIS-STAMP-3211-AZ",
+        dzMinistryHealthApproval: "DZ-MADR-SANTE-2026-0901",
+        assignedAirBridgeFlight: "SOL-AIR-AZ02",
+        currentLocationStage: "IN_TRANSIT_AIR",
+        currentHeartRateBpm: 68,
+        temperatureCelsius: 38.4
+      },
+      {
+        tagId: "US-DZ-AZ-718002",
+        rfidChipId: "RFID-840-003-718-002",
+        breed: "BROWN_SWISS_ARID",
+        sireName: "SUPERBROWN DEXTER-ET",
+        damName: "ARIZONA QUEEN BRITA-04",
+        expectedAnnualMilkYieldLiters: 11200,
+        heatToleranceScore: 97,
+        pregnancyStatus: "عشار 18 أسبوع",
+        genomicProfileScore: 91.8,
+        usdaExportSeal: "USDA-APHIS-STAMP-3212-AZ",
+        dzMinistryHealthApproval: "DZ-MADR-SANTE-2026-0902",
+        assignedAirBridgeFlight: "SOL-AIR-AZ02",
+        currentLocationStage: "IN_TRANSIT_AIR",
+        currentHeartRateBpm: 69,
+        temperatureCelsius: 38.4
+      }
+    ]
+  },
+  {
+    flightId: "SOL-AIR-NM03",
+    status: "LANDED_QUARANTINE",
+    missionNameAr: "الجسر الاستراتيجي الفوج 03: نيو مكسيكو ➔ بسكرة / قسنطينة (مطار بسكرة DAUB)",
+    missionNameEn: "Strategic Airlift Batch 03: New Mexico to Biskra/Ziban Hub",
+    cargo: {
+      headCount: 230,
+      breed: "JERSEY_GENOMIC",
+      breedLabelAr: "أبقار جيرسي عالية نسبة الدسم والبروتين الجاف",
+      breedLabelEn: "High-Butterfat Jersey Genomic Dairy Cows",
+      avgWeightKg: 460,
+      gestationStageWeeks: 16,
+      originState: "New Mexico",
+      originRanch: "Rio Grande Dairy Valley (Las Cruces, NM)",
+      usdaHealthCertNumber: "USDA-APHIS-VET-2026-NM-88412",
+      rfidRangeStart: "840-003-512-000-001",
+      rfidRangeEnd: "840-003-512-000-230",
+      averageGenomicMeritIndex: 2680,
+      waterConsumptionRateLitersPerHour: 1100
+    },
+    telemetry: {
+      callsign: "SOL-DZ-747F2",
+      aircraftType: "Boeing 747-400F",
+      operator: "SOL Global Airlift Logistics",
+      originIcao: "KELP",
+      originName: "El Paso / New Mexico Border Int. (KELP)",
+      destIcao: "DAUB",
+      destNameAr: "مطار محمد خيضر (بسكرة DAUB) - بوابة الزيبان",
+      destNameEn: "Biskra Mohamed Khider Airport (DAUB)",
+      destWilayaNumber: 7,
+      currentCoordinates: [34.79, 5.73], // Landed on runway/tarmac at Biskra
+      altitudeFeet: 289,
+      groundSpeedKnots: 0,
+      headingDeg: 130,
+      cabinTemperatureCelsius: 18.0,
+      cabinHumidityPercent: 50,
+      cabinCo2Ppm: 620,
+      ventilationStatus: "OPTIMAL_CIRCULATION",
+      feedWaterSupplyRemainingHours: 24.0,
+      estimatedArrivalUtc: "2026-10-11 18:20 UTC (تم الهبوط)",
+      routeProgressPercent: 100,
+      flightPathWaypoints: [
+        [31.80, -106.37], // ELP
+        [36.00, -70.00],
+        [35.50, -20.00],
+        [36.00, 3.00],
+        [34.79, 5.73]     // Biskra DAUB
+      ]
+    },
+    receptionHub: {
+      quarantineStationId: "DZ-QUAR-BSK-03",
+      airportIcao: "DAUB",
+      stationNameAr: "مركز الحجر الصحي البيطري المتقدم - بسكرة",
+      stationNameEn: "Biskra Regional Quarantine & Genetic Control Station",
+      wilayaAr: "بسكرة (ولاية 07)",
+      veterinarySupervisors: [
+        "د. عمر بوزيد (مفتش المصالح البيطرية)",
+        "د. مريم دراجي (رئيسة قسم التحاليل الميكروبيولوجية)"
+      ],
+      quarantineCapacityHeads: 1000,
+      activeOccupancyHeads: 630,
+      targetMegaDairyAr: "مركب صناعة الألبان ومشتقاتها - سيدي عقبة / بسكرة",
+      targetMegaDairyEn: "Ziban Dairy Processing Hub (Sidi Okba)",
+      transportFleetAssignedCount: 14,
+      isolationProtocolDays: 21,
+      biosecurityLevel: "BIOSECURE_EXPEDITION"
+    },
+    serverConnectionStatus: "CONNECTED_REALTIME",
+    satelliteDataRelay: "STARLINK_AIR",
+    lastTelemetryPingSec: 1,
+    sampledPedigreeList: [
+      {
+        tagId: "US-DZ-NM-512001",
+        rfidChipId: "RFID-840-003-512-001",
+        breed: "JERSEY_GENOMIC",
+        sireName: "JX RIVER VALLEY CHIEF {6}-ET",
+        damName: "NM DESERT BELLE JERSEY-22",
+        expectedAnnualMilkYieldLiters: 9800,
+        heatToleranceScore: 96,
+        pregnancyStatus: "عشار 16 أسبوع (حالة صحية ممتازة)",
+        genomicProfileScore: 95.0,
+        usdaExportSeal: "USDA-APHIS-STAMP-5521-NM",
+        dzMinistryHealthApproval: "DZ-MADR-SANTE-2026-1044",
+        assignedAirBridgeFlight: "SOL-AIR-NM03",
+        currentLocationStage: "QUARANTINE_INSPECTION",
+        currentHeartRateBpm: 66,
+        temperatureCelsius: 38.3
+      }
+    ]
+  },
+  {
+    flightId: "SOL-AIR-TX04",
+    status: "DISPATCHED_TO_DAIRY",
+    missionNameAr: "الجسر الاستراتيجي الفوج 04: تكساس ➔ الجزائر العاصمة ➔ محيط تافراوي / وهران",
+    missionNameEn: "Strategic Airlift Batch 04: Texas to Houari Boumediene to Mega-Dairy",
+    cargo: {
+      headCount: 215,
+      breed: "HOLSTEIN_HEIFER",
+      breedLabelAr: "أبقار هولشتاين عشار نقية السلالة (شهادة أصلية)",
+      breedLabelEn: "Registered Purebred Holstein Heifers",
+      avgWeightKg: 590,
+      gestationStageWeeks: 21,
+      originState: "Texas",
+      originRanch: "Brazos River Genetics (Lubbock, TX)",
+      usdaHealthCertNumber: "USDA-APHIS-VET-2026-TX-10923",
+      rfidRangeStart: "840-003-889-000-001",
+      rfidRangeEnd: "840-003-889-000-215",
+      averageGenomicMeritIndex: 2910,
+      waterConsumptionRateLitersPerHour: 1420
+    },
+    telemetry: {
+      callsign: "SOL-DZ-747F3",
+      aircraftType: "Boeing 747-400F",
+      operator: "SOL Global Strategic Operations",
+      originIcao: "KDAL",
+      originName: "Dallas/Fort Worth (KDAL)",
+      destIcao: "DAAG",
+      destNameAr: "مطار الجزائر الدولي هواري بومدين (DAAG / ALG)",
+      destNameEn: "Algiers Houari Boumediene Int. Airport (DAAG)",
+      destWilayaNumber: 16,
+      currentCoordinates: [36.69, 3.21], // Landed at Algiers cargo apron
+      altitudeFeet: 82,
+      groundSpeedKnots: 0,
+      headingDeg: 270,
+      cabinTemperatureCelsius: 16.5,
+      cabinHumidityPercent: 52,
+      cabinCo2Ppm: 580,
+      ventilationStatus: "OPTIMAL_CIRCULATION",
+      feedWaterSupplyRemainingHours: 24.0,
+      estimatedArrivalUtc: "2026-10-10 14:00 UTC (تم إنهاء الحجر بنجاح)",
+      routeProgressPercent: 100,
+      flightPathWaypoints: [
+        [32.89, -97.04],
+        [36.69, 3.21]
+      ]
+    },
+    receptionHub: {
+      quarantineStationId: "DZ-QUAR-ALG-04",
+      airportIcao: "DAAG",
+      stationNameAr: "محطة الحجر الجوي المركزي - مطار هواري بومدين الدولي",
+      stationNameEn: "Central Air Cargo Quarantine Terminal - Algiers",
+      wilayaAr: "الجزائر العاصمة (ولاية 16)",
+      veterinarySupervisors: [
+        "د. مصطفى حموش (المديرية العامة للمصالح البيطرية بالجزائر)",
+        "د. أمينة زروقي (الوكالة الوطنية للمراقبة الجينية)"
+      ],
+      quarantineCapacityHeads: 1500,
+      activeOccupancyHeads: 310,
+      targetMegaDairyAr: "المجمع الحليبي النموذجي للسهوب والهضاب العليا",
+      targetMegaDairyEn: "National Strategic High-Plateau Dairy Compound",
+      transportFleetAssignedCount: 16,
+      isolationProtocolDays: 21,
+      biosecurityLevel: "CLEARANCE_GRANTED"
+    },
+    serverConnectionStatus: "CONNECTED_REALTIME",
+    satelliteDataRelay: "ALSAT_GROUND_LINK",
+    lastTelemetryPingSec: 5,
+    sampledPedigreeList: [
+      {
+        tagId: "US-DZ-TX-889001",
+        rfidChipId: "RFID-840-003-889-001",
+        breed: "HOLSTEIN_HEIFER",
+        sireName: "FARNEAR DELTA-LAMBDA-ET",
+        damName: "BRAZOS VALLEY QUEEN-55",
+        expectedAnnualMilkYieldLiters: 13100,
+        heatToleranceScore: 93,
+        pregnancyStatus: "عشار 21 أسبوع (مكتملة الفحوصات واللقاحات)",
+        genomicProfileScore: 97.4,
+        usdaExportSeal: "USDA-APHIS-STAMP-9901-TX",
+        dzMinistryHealthApproval: "DZ-MADR-SANTE-2026-0774",
+        assignedAirBridgeFlight: "SOL-AIR-TX04",
+        currentLocationStage: "CLIMATE_CONVOY",
+        currentHeartRateBpm: 67,
+        temperatureCelsius: 38.4
+      }
+    ]
+  }
+];

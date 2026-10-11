@@ -418,7 +418,7 @@ export const SopManualModal: React.FC<SopManualModalProps> = ({
           <div className="text-[11px] text-slate-400 font-mono">
             <span>Doc ID: SOP-SOL-OPS-2026-V1</span>
             <span className="mx-2">·</span>
-            <span>Kingdom of Saudi Arabia</span>
+            <span>الجمهورية الجزائرية الديمقراطية الشعبية</span>
           </div>
 
           <button

@@ -140,7 +140,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
                     {isAr ? 'وثيقة الجودة الرقمية السيادية' : 'Sovereign Digital Quality Passport'}
                   </h3>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-400 text-slate-950 font-bold">
-                    ISO-22005 / KSA-AGRI
+                    ISO-22005 / DZ-AGRI
                   </span>
                 </div>
                 <p className="text-xs text-slate-300 font-mono mt-0.5">
