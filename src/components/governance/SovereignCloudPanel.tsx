@@ -49,6 +49,7 @@ import {
 } from '../../utils/merkleTree';
 import { MerkleAuditReportModal } from './MerkleAuditReportModal';
 import { MerkleTreeVisualizer } from './MerkleTreeVisualizer';
+import { SOVEREIGN_NODES } from '../../data/mockData';
 
 interface SovereignCloudPanelProps {
   status: SovereignCloudStatus;
@@ -133,6 +134,14 @@ export const SovereignCloudPanel: React.FC<SovereignCloudPanelProps> = ({
     new Date().toISOString().replace('T', ' ').slice(11, 19) + ' UTC'
   );
   const [latestCommitNotification, setLatestCommitNotification] = useState<LiveCommitNotification | null>(null);
+
+  // Sovereign Cluster Node Management (Primary: DZ-North-1 Algiers, Algeria - Africa)
+  const [selectedNodeId, setSelectedNodeId] = useState<string>('DZ-NORTH-1');
+  const [isNodeModalOpen, setIsNodeModalOpen] = useState<boolean>(false);
+  const activeNode = useMemo(
+    () => SOVEREIGN_NODES.find((n) => n.id === selectedNodeId) || SOVEREIGN_NODES[0],
+    [selectedNodeId]
+  );
 
   // Build live dynamic Merkle Tree state including live polled batch commits
   const merkleTreeState: MerkleTreeState = useMemo(() => {
@@ -228,14 +237,14 @@ export const SovereignCloudPanel: React.FC<SovereignCloudPanelProps> = ({
 
   const handleExportAuditLogCSV = () => {
     downloadMerkleAuditLogCSV(merkleTreeState, {
-      clusterNode: 'KSA-Central-1 (Riyadh)',
+      clusterNode: `${activeNode.code} • ${isAr ? activeNode.continentAr : activeNode.continentEn}`,
       operatorRole: currentRole,
-      fileNamePrefix: 'sovereign-merkle-audit-log'
+      fileNamePrefix: `sovereign-merkle-audit-${activeNode.id.toLowerCase()}`
     });
     setCsvExportNotification(
       isAr 
-        ? `تم تصدير سجل تدقيق شجرة ميركل (${merkleTreeState.totalLeaves} معاملة) بنجاح كملف CSV للامتثال التنظيمي (NCA ECC / RFC 6962).`
-        : `Successfully exported Merkle audit log (${merkleTreeState.totalLeaves} transactions) to CSV for regulatory compliance (NCA ECC / RFC 6962).`
+        ? `تم تصدير سجل تدقيق شجرة ميركل (${merkleTreeState.totalLeaves} معاملة) بنجاح عبر عقدة ${activeNode.cityAr} (${activeNode.code}) كملف CSV للامتثال التنظيمي (RFC 6962 / ISO 27001).`
+        : `Successfully exported Merkle audit log (${merkleTreeState.totalLeaves} transactions) via ${activeNode.cityEn} node (${activeNode.code}) to CSV for regulatory compliance.`
     );
     setTimeout(() => {
       setCsvExportNotification(null);
@@ -328,13 +337,40 @@ export const SovereignCloudPanel: React.FC<SovereignCloudPanelProps> = ({
 
       {/* Cluster Nodes & Sovereign Security Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+        {/* Primary Sovereign Node Card - Algeria (Africa) */}
+        <div className="p-4 rounded-xl bg-slate-900/80 border border-emerald-500/40 space-y-1.5 shadow-md relative overflow-hidden group">
           <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>{isAr ? 'العقدة الأساسية' : 'Primary Node'}</span>
-            <Server className="w-4 h-4 text-emerald-400" />
+            <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>{isAr ? 'العقدة السيادية الأساسية' : 'Primary Sovereign Node'}</span>
+            </span>
+            <button
+              onClick={() => setIsNodeModalOpen(true)}
+              className="text-[10px] text-emerald-400 hover:text-emerald-300 font-mono flex items-center gap-1 bg-emerald-950/80 hover:bg-emerald-900/90 px-1.5 py-0.5 rounded border border-emerald-800/80 transition-colors cursor-pointer"
+              title={isAr ? 'إدارة وتبديل العقد السيادية' : 'Manage & Switch Sovereign Nodes'}
+            >
+              <Globe2 className="w-3 h-3 text-emerald-400" />
+              <span>{isAr ? 'العقد السيادية' : 'Nodes'}</span>
+            </button>
           </div>
-          <p className="text-sm font-bold text-white font-mono">KSA-Central-1 (Riyadh)</p>
-          <p className="text-[11px] text-emerald-400 font-mono">Uptime: 99.998%</p>
+          <div>
+            <div className="flex items-center justify-between gap-1">
+              <p className="text-sm font-bold text-white font-mono flex items-center gap-1.5">
+                <Server className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-emerald-300">{activeNode.code}</span>
+              </p>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 shrink-0">
+                {isAr ? activeNode.continentAr : activeNode.continentEn}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-300 mt-0.5 truncate font-medium">
+              {isAr ? activeNode.nameAr : activeNode.nameEn}
+            </p>
+          </div>
+          <div className="flex items-center justify-between text-[11px] font-mono pt-1 border-t border-slate-800/80">
+            <span className="text-emerald-400 font-semibold">Uptime: {activeNode.uptimePercent}%</span>
+            <span className="text-cyan-400 font-semibold">{activeNode.latencyMs}ms latency</span>
+          </div>
         </div>
 
         <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
@@ -717,8 +753,12 @@ export const SovereignCloudPanel: React.FC<SovereignCloudPanelProps> = ({
           </div>
           <div className="p-2.5 rounded bg-slate-950 border border-slate-850 flex items-center justify-between">
             <span className="text-emerald-400">DATA RESIDENCY:</span>
-            <span>Primary: Riyadh Data Sovereign Center | Secondary: Jeddah Vault</span>
-            <span className="text-[10px] text-slate-500">COMPLIANT</span>
+            <span>
+              {isAr 
+                ? 'الأساسية: مركز الجزائر السيادي (DZ-North-1 - إفريقيا) | الاحتياطية: محفظة وهران (DZ-West-2)' 
+                : 'Primary: Algiers Sovereign Center (DZ-North-1 - Africa) | Secondary: Oran Vault (DZ-West-2)'}
+            </span>
+            <span className="text-[10px] text-emerald-400 font-bold">COMPLIANT (DZ / AU)</span>
           </div>
           <div className="p-2.5 rounded bg-slate-950 border border-slate-850 flex items-center justify-between">
             <span className="text-emerald-400">MERKLE INTEGRITY:</span>
@@ -738,6 +778,106 @@ export const SovereignCloudPanel: React.FC<SovereignCloudPanelProps> = ({
           currentRole={currentRole}
           onElevateToSupervisor={onSelectRole ? () => onSelectRole('OPERATIONS_SUPERVISOR') : undefined}
         />
+      )}
+
+      {/* Sovereign Node Management & Cluster Topology Modal */}
+      {isNodeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                  <Server className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <span>{isAr ? 'خريطة وإدارة العقد السحابية السيادية' : 'Sovereign Cloud Nodes & Data Residency'}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
+                      {isAr ? 'الجزائر • قارة إفريقيا' : 'Algeria • Africa Region'}
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    {isAr
+                      ? 'العقدة الأساسية المعينة للمنظومة هي مركز الجزائر (DZ-North-1) لضمان السيادة الوطنية وتوطين البيانات.'
+                      : 'Primary designated cluster node is Algiers Sovereign Center (DZ-North-1) ensuring continental data residency.'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsNodeModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Nodes list */}
+            <div className="space-y-3">
+              {SOVEREIGN_NODES.map((node) => {
+                const isSelected = selectedNodeId === node.id;
+                return (
+                  <div
+                    key={node.id}
+                    onClick={() => setSelectedNodeId(node.id)}
+                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-emerald-950/40 border-emerald-500/80 shadow-lg shadow-emerald-950/40 ring-1 ring-emerald-500/50'
+                        : 'bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/60'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-bold text-white font-mono text-sm">{node.code}</span>
+                          {node.isPrimary && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                              {isAr ? 'العقدة الأساسية (الجزائر - إفريقيا)' : 'PRIMARY NODE (Africa)'}
+                            </span>
+                          )}
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-850 text-slate-300 border border-slate-700">
+                            {isAr ? node.continentAr : node.continentEn}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-300 font-medium">
+                          {isAr ? node.nameAr : node.nameEn}
+                        </p>
+                        <p className="text-[11px] text-slate-400 font-mono">
+                          Endpoint: {node.postGisEndpoint}
+                        </p>
+                      </div>
+
+                      <div className="text-right shrink-0 space-y-1 font-mono text-xs">
+                        <div className="flex items-center gap-1.5 justify-end text-emerald-400 font-bold">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                          <span>{node.uptimePercent}% Uptime</span>
+                        </div>
+                        <span className="text-cyan-400 block text-[11px]">{node.latencyMs}ms Latency</span>
+                        <span className="text-[10px] text-slate-500 block">{node.tierClassification}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-850 text-xs text-slate-300 flex items-center justify-between">
+              <div className="flex items-center gap-2 font-mono text-[11px]">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>
+                  {isAr 
+                    ? `العقدة النشطة حالياً: ${activeNode.code} (${activeNode.cityAr})`
+                    : `Active Target Node: ${activeNode.code} (${activeNode.cityEn})`}
+                </span>
+              </div>
+              <button
+                onClick={() => setIsNodeModalOpen(false)}
+                className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors cursor-pointer shadow-md"
+              >
+                {isAr ? 'تأكيد وحفظ' : 'Confirm & Apply'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

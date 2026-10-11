@@ -6,6 +6,7 @@ import {
   WorkOrder, 
   DigitalQualityPassport,
   SovereignCloudStatus,
+  SovereignNodeInfo,
   OperationsKPIs,
   StressTestScorecardMetric
 } from '../types/ecosystem';
@@ -600,15 +601,72 @@ export const INITIAL_PASSPORTS: DigitalQualityPassport[] = [
   }
 ];
 
+export const SOVEREIGN_NODES: SovereignNodeInfo[] = [
+  {
+    id: "DZ-NORTH-1",
+    code: "DZ-North-1 (Algiers / الجزائر)",
+    nameAr: "مركز الجزائر للبيانات السيادية (DZ-North-1) - قارة إفريقيا",
+    nameEn: "Algiers Sovereign Datacenter (DZ-North-1) - Africa",
+    cityAr: "الجزائر العاصمة",
+    cityEn: "Algiers",
+    countryAr: "الجمهورية الجزائرية الديمقراطية الشعبية",
+    countryEn: "Democratic Republic of Algeria",
+    continentAr: "قارة إفريقيا",
+    continentEn: "Africa",
+    isPrimary: true,
+    status: "ONLINE",
+    uptimePercent: 99.998,
+    latencyMs: 8,
+    postGisEndpoint: "https://dz-algiers.atlascloud.sovereign:5432/geodatabase",
+    tierClassification: "Tier IV National Sovereign Vault"
+  },
+  {
+    id: "DZ-WEST-2",
+    code: "DZ-West-2 (Oran / وهران)",
+    nameAr: "مركز وهران الاحتياطي السيادي (DZ-West-2) - قارة إفريقيا",
+    nameEn: "Oran Sovereign Backup Vault (DZ-West-2) - Africa",
+    cityAr: "وهران",
+    cityEn: "Oran",
+    countryAr: "الجمهورية الجزائرية الديمقراطية الشعبية",
+    countryEn: "Algeria",
+    continentAr: "قارة إفريقيا",
+    continentEn: "Africa",
+    isPrimary: false,
+    status: "ONLINE",
+    uptimePercent: 99.995,
+    latencyMs: 12,
+    postGisEndpoint: "https://dz-oran-mirror.atlascloud.sovereign:5432/geodatabase",
+    tierClassification: "Tier III+ Disaster Recovery Vault"
+  },
+  {
+    id: "KSA-CENTRAL-1",
+    code: "KSA-Central-1 (Riyadh / الرياض)",
+    nameAr: "مركز الرياض للبيانات السيادية (KSA-Central-1) - الشرق الأوسط",
+    nameEn: "Riyadh Sovereign Datacenter (KSA-Central-1) - Middle East",
+    cityAr: "الرياض",
+    cityEn: "Riyadh",
+    countryAr: "المملكة العربية السعودية",
+    countryEn: "Saudi Arabia",
+    continentAr: "الشرق الأوسط",
+    continentEn: "Middle East",
+    isPrimary: false,
+    status: "ONLINE",
+    uptimePercent: 99.998,
+    latencyMs: 34,
+    postGisEndpoint: "https://ksa-riyadh.atlascloud.sovereign:5432/geodatabase",
+    tierClassification: "Tier IV Federated Sovereign Vault"
+  }
+];
+
 export const INITIAL_SOVEREIGN_STATUS: SovereignCloudStatus = {
-  activeNode: "مركز الرياض للبيانات السيادية (KSA-Central-1)",
-  activeNodeEn: "Riyadh Sovereign Datacenter (KSA-Central-1)",
+  activeNode: "مركز الجزائر للبيانات السيادية (DZ-North-1) - قارة إفريقيا",
+  activeNodeEn: "Algiers Sovereign Datacenter (DZ-North-1) - Africa",
   clusterHealth: "OPTIMAL",
   eventBusThroughputMsgSec: 4280,
   postGisRecordsCount: 1485290,
   encryptionMode: "AES-256-GCM (National Sovereign Standard)",
-  sovereignDataResidency: "Kingdom of Saudi Arabia (Primary / KSA-Central-1)",
-  geoServerWmsLatencyMs: 14,
+  sovereignDataResidency: "الجمهورية الجزائرية الديمقراطية الشعبية - قارة إفريقيا (العقدة الأساسية / DZ-North-1)",
+  geoServerWmsLatencyMs: 8,
   storageUsageTb: 84.6,
   storageTotalTb: 250.0
 };

@@ -190,14 +190,33 @@ export interface DigitalQualityPassport {
   }[];
 }
 
+export interface SovereignNodeInfo {
+  id: string;
+  code: string;
+  nameAr: string;
+  nameEn: string;
+  cityAr: string;
+  cityEn: string;
+  countryAr: string;
+  countryEn: string;
+  continentAr: string;
+  continentEn: string;
+  isPrimary: boolean;
+  status: 'ONLINE' | 'STANDBY' | 'SYNCING';
+  uptimePercent: number;
+  latencyMs: number;
+  postGisEndpoint: string;
+  tierClassification: string;
+}
+
 export interface SovereignCloudStatus {
   activeNode: string;
   activeNodeEn: string;
   clusterHealth: 'OPTIMAL' | 'DEGRADED' | 'SYNCING';
   eventBusThroughputMsgSec: number;
   postGisRecordsCount: number;
-  encryptionMode: 'AES-256-GCM (National Sovereign Standard)';
-  sovereignDataResidency: 'Kingdom of Saudi Arabia (Primary / KSA-Central-1)';
+  encryptionMode: string;
+  sovereignDataResidency: string;
   geoServerWmsLatencyMs: number;
   storageUsageTb: number;
   storageTotalTb: number;

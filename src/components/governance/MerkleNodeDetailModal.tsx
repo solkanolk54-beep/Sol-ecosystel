@@ -696,7 +696,7 @@ export const MerkleNodeDetailModal: React.FC<MerkleNodeDetailModalProps> = ({
         <div className="px-5 py-3.5 bg-slate-950 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 text-slate-400 font-mono text-[11px]">
             <Lock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span className="truncate">AtlasCloud Sovereign Enclave • KSA-Central-1 • RFC 6962 Standard</span>
+            <span className="truncate">AtlasCloud Sovereign Enclave • DZ-North-1 (Algeria - Africa) • RFC 6962 Standard</span>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">

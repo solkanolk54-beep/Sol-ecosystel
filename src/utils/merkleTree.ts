@@ -465,18 +465,18 @@ export const BASE_LEDGER_LEAVES: Omit<MerkleLeaf, 'leafHash' | 'merkleProof' | '
     timestamp: '2026-10-06 16:48:22 UTC',
     sourceSubsystem: 'HSM-Enclave',
     eventType: 'EVENT_SOVEREIGN_NODE_SYNC',
-    dataBatch: 'BATCH-SYNC-KSA-CENTRAL-01',
+    dataBatch: 'BATCH-SYNC-DZ-NORTH-01',
     txHash: '0x2968e0a2c4d6f8a0b2c4e6a8b0c2d4e6f8a0b2c4d6e8f0a2b4c6d8e0f2a4b6c8',
-    assetId: 'datacenter-ksa-central-1',
+    assetId: 'datacenter-dz-north-1',
     parcelCode: 'CLUSTER-CORE',
-    summary: 'Bi-directional replication sync between Riyadh Sovereign Vault & Jeddah Mirror',
-    summaryAr: 'مزامنة التشفير المتبادل بين مركز الرياض السيادي ومحفظة جدة الاحتياطية',
-    signerKey: 'KSA-NATIONAL-HSM-LEVEL4#9901',
+    summary: 'Bi-directional replication sync between Algiers Sovereign Vault & Oran Mirror (Africa Region)',
+    summaryAr: 'مزامنة التشفير المتبادل بين مركز الجزائر السيادي ومحفظة وهران الاحتياطية (قارة إفريقيا)',
+    signerKey: 'DZ-NATIONAL-HSM-LEVEL4#1601',
     rawPayload: {
-      batch_id: 'BATCH-SYNC-KSA-CENTRAL-01',
-      datacenter: 'KSA-Central-1',
-      mirror_site: 'KSA-West-2',
-      replication_latency_ms: 4.8,
+      batch_id: 'BATCH-SYNC-DZ-NORTH-01',
+      datacenter: 'DZ-North-1 (Algiers)',
+      mirror_site: 'DZ-West-2 (Oran)',
+      replication_latency_ms: 3.6,
       zero_data_loss_verified: true,
       data_integrity_ratio: 1.0
     }
@@ -805,14 +805,14 @@ export function generateSignedAuditReport(
           ? 'قائد العمليات الميدانية للأسطول (Field Fleet Manager)'
           : 'مراقب المراعي والحيوان (Livestock Controller)',
         roleTitleEn: isAuthorizedSupervisor ? 'Operations Supervisor' : currentRole,
-        operatorId: isAuthorizedSupervisor ? 'SA-SUP-8841-KSA' : 'SA-USER-0912-KSA',
+        operatorId: isAuthorizedSupervisor ? 'DZ-SUP-1641-AFRICA' : 'DZ-USER-0912-AFRICA',
         isAuthorized: isAuthorizedSupervisor,
         authorizationStandard: 'SOP-SOL-OPS-2026-V1 Section 2 (Role Authorizations) & Section 5 (Audit Trail)',
-        terminal: 'AtlasCloud Unified Operations Sovereign Console (KSA-Central-1)'
+        terminal: 'AtlasCloud Unified Operations Sovereign Console (DZ-North-1 - Africa)'
       },
       environment: 'AtlasCloud Sovereign Secure Enclave v3.4 (AES-256-GCM / Hardware Security Module Level 4)',
-      sovereignJurisdiction: 'Kingdom of Saudi Arabia (Riyadh Sovereign Datacenter)',
-      complianceFramework: 'NCA Essential Cybersecurity Controls (ECC-1:2018) & Sovereign PostGIS Geodatabase Standard',
+      sovereignJurisdiction: 'Democratic Republic of Algeria (Algiers Sovereign Datacenter - Africa)',
+      complianceFramework: 'Sovereign PostGIS Geodatabase Standard / RFC 6962 / ISO-27001 (African Sovereign Cloud)',
       sopReference: 'SOP-SOL-OPS-2026-V1: Unified Geospatial Operations & Kareema Field Dispatch Protocol'
     },
     merkleState: {
@@ -825,9 +825,9 @@ export function generateSignedAuditReport(
     },
     cryptographicSignature: {
       signatureAlgorithm: 'ECDSA-secp256k1 with SHA-256 (NIST P-256 Sovereign PKI Profile)',
-      hsmKeyId: 'KSA-ATLAS-AGRI-ROOT-CA#0844',
+      hsmKeyId: 'DZ-ATLAS-AGRI-ROOT-CA#1644',
       signatureHex: signatureHex.toLowerCase(),
-      timestampAuthority: 'Saudi Sovereign Timestamp Authority (STA-KSA-01 / RFC 3161)',
+      timestampAuthority: 'Algerian Sovereign Timestamp Authority (STA-DZ-01 / RFC 3161)',
       staCertificateThumbprint: 'SHA256:7B8F9A1C3E5D7A9C1E3F5A7B9C1D3E5F7A9B1C3D5E7F9A1B3C5D7E9F1A3B5C7D',
       publicKeyFingerprint: '04a1f8b3c9e2d4f1a6b8c0d1e2f3a4b5c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4',
       reportDigestSha256: reportPayloadDigest
@@ -1045,9 +1045,9 @@ export function generateBatchVerificationReport(
     reportMetadata: {
       reportId: `REP-VERIFY-${batchId.replace(/[^A-Za-z0-9_-]/g, '_')}-${Date.now().toString(36).toUpperCase()}`,
       generatedAt: now,
-      standard: 'NCA ECC-1:2018 / RFC 6962 Standard',
-      environment: 'Sovereign Cloud HSM Enclave (KSA-Central-1)',
-      jurisdiction: 'Kingdom of Saudi Arabia (NDMO Sovereign Enclave)',
+      standard: 'RFC 6962 / ISO-27001 Sovereign Audit Standard',
+      environment: 'Sovereign Cloud HSM Enclave (DZ-North-1 - Africa)',
+      jurisdiction: 'Democratic Republic of Algeria (Algiers Sovereign Enclave - Africa)',
       verifierRole: 'SENIOR_GOVERNANCE_AUDITOR'
     },
     targetBatch: {
@@ -1115,8 +1115,8 @@ export function downloadBatchVerificationPdfReport(report: BatchVerificationRepo
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
   doc.setTextColor(148, 163, 184);
-  doc.text('AtlasCloud Sovereign Infrastructure • KSA-Central-1 HSM Enclave', 14, 22);
-  doc.text('Compliance: NCA ECC-1:2018 / RFC 6962 Merkle Tree Audit Protocol', 14, 27);
+  doc.text('AtlasCloud Sovereign Infrastructure • DZ-North-1 HSM Enclave (Algeria - Africa)', 14, 22);
+  doc.text('Compliance: African Continental & RFC 6962 Merkle Tree Audit Protocol', 14, 27);
   doc.text(`Report ID: ${report.reportMetadata.reportId}  |  Generated: ${new Date(report.reportMetadata.generatedAt).toLocaleString()}`, 14, 32);
 
   let y = 45;
@@ -1288,7 +1288,7 @@ export function generateMerkleAuditLogCSV(
     operatorRole?: string;
   }
 ): string {
-  const clusterNode = options?.clusterNode || 'KSA-Central-1 (Riyadh)';
+  const clusterNode = options?.clusterNode || 'DZ-North-1 (Algiers, Algeria - Africa)';
   const operatorRole = options?.operatorRole || 'SOVEREIGN_AUDITOR';
   const now = new Date();
   const generationTimestamp = now.toISOString();
@@ -1355,7 +1355,7 @@ export function generateMerkleAuditLogCSV(
       escapeCSVField(operatorRole),
       escapeCSVField('100.0% BIT-FOR-BIT MATCH'),
       escapeCSVField('TRUE'),
-      escapeCSVField('KSA-NCA-ECC-1:2018 / RFC-6962 / ISO-27001:2022 / SOC-2 Type II'),
+      escapeCSVField('DZ-SOVEREIGN-SEC-2026 / RFC-6962 / ISO-27001:2022 / SOC-2 Type II (Africa Enclave)'),
       escapeCSVField(leaf.summary),
       escapeCSVField(leaf.summaryAr),
       escapeCSVField(generationTimestamp)

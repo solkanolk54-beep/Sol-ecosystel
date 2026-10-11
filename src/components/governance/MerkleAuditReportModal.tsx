@@ -237,7 +237,7 @@ export const MerkleAuditReportModal: React.FC<MerkleAuditReportModalProps> = ({
                 <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
                   <span className="text-slate-400 block text-[11px]">{isAr ? 'هيئة الختم الزمني (Timestamp Authority)' : 'Timestamp Authority'}</span>
                   <p className="font-mono text-cyan-300 font-bold text-xs truncate">
-                    STA-KSA-01 (RFC 3161)
+                    STA-DZ-01 (RFC 3161)
                   </p>
                   <span className="text-[10px] text-slate-400 font-mono">{report.reportHeader.generatedAt}</span>
                 </div>

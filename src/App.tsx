@@ -554,7 +554,9 @@ export default function App() {
                 <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-850">
                   <span className="text-slate-400 block text-[11px] mb-0.5">{isAr ? 'العقدة السحابية السيادية' : 'Sovereign Node'}</span>
                   <span className="font-bold text-white font-mono">
-                    {isBlackoutActive ? 'Local Edge Contingency Node' : 'KSA-Central-1 (Riyadh)'}
+                    {isBlackoutActive 
+                      ? (isAr ? 'عقدة الطوارئ المحلية (Edge)' : 'Local Edge Contingency Node') 
+                      : (isAr ? 'DZ-North-1 (الجزائر - إفريقيا)' : 'DZ-North-1 (Algiers, Africa)')}
                   </span>
                 </div>
 

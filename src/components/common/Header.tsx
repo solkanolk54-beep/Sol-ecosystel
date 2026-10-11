@@ -72,9 +72,15 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 text-slate-400 font-mono text-[11px]">
-            <Globe2 className="w-3 h-3 text-slate-500" />
-            <span>KSA-Central-1 (Riyadh Node)</span>
+          <div 
+            onClick={() => setActiveTab('sovereign')}
+            className="flex items-center gap-1.5 text-slate-300 font-mono text-[11px] bg-slate-900/80 px-2 py-0.5 rounded border border-emerald-500/30 hover:border-emerald-500/60 transition-colors cursor-pointer"
+            title={isAr ? 'العقدة السيادية الأساسية: الجزائر (قارة إفريقيا)' : 'Primary Sovereign Node: Algeria (Africa)'}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <Globe2 className="w-3 h-3 text-emerald-400" />
+            <span className="text-emerald-300 font-bold">DZ-North-1</span>
+            <span className="text-slate-400">({isAr ? 'الجزائر • إفريقيا' : 'Algiers • Africa'})</span>
           </div>
 
           <button
