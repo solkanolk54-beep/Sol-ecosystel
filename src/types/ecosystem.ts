@@ -62,6 +62,13 @@ export interface ParcelAsset {
     isActive: boolean;
     speedPercent: number;
   };
+  telemetryHistorical?: {
+    timestamp: string;
+    pressureBar: number;
+    flowRateLps: number;
+    speedPercent?: number;
+    nominalPressure?: number;
+  }[];
   expectedHarvestDate: string;
   lastFertilization: string;
 }

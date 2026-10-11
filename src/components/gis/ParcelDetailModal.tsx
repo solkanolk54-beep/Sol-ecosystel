@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   X, 
   Satellite, 
@@ -11,8 +11,24 @@ import {
   AlertTriangle,
   ArrowRight,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Gauge,
+  Waves,
+  TrendingDown,
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid,
+  ReferenceLine
+} from 'recharts';
 import { ParcelAsset, Language } from '../../types/ecosystem';
 
 interface ParcelDetailModalProps {
@@ -155,6 +171,190 @@ export const ParcelDetailModal: React.FC<ParcelDetailModalProps> = ({
                 {parcel.soilHealth.moisturePercent}%
               </span>
               <span className="text-[10px] text-slate-500 block mt-0.5">pH: {parcel.soilHealth.ph}</span>
+            </div>
+          </div>
+
+          {/* Real-Time & Historical Irrigation Telemetry Recharts Chart */}
+          <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-900 pb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-md bg-cyan-950 text-cyan-400 border border-cyan-800/60">
+                  <Gauge className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                    <span>{isAr ? 'اتجاهات ضغط الري وتدفق المياه تاريخياً' : 'Irrigation Pressure & Flow Rate Trends'}</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono">
+                      IoT Telemetry
+                    </span>
+                  </h4>
+                  <p className="text-[11px] text-slate-400">
+                    {isAr
+                      ? `رسم بياني لحظي وتاريخي عبر مكتبة Recharts لمتابعة الضغط الهيدروليكي (bar) ومعدل التدفق (L/s)`
+                      : `Dynamic Recharts dual-axis time-series correlating hydraulic pressure (bar) vs flow rate (L/s)`}
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Indicator */}
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-900 border border-slate-800">
+                  <span className="text-slate-400 text-[10px]">{isAr ? 'الضغط الحالي:' : 'Current:'}</span>
+                  <span className={`font-bold ${parcel.irrigationTelemetry.pressureBar >= 3.0 ? 'text-cyan-400' : 'text-rose-400 animate-pulse'}`}>
+                    {parcel.irrigationTelemetry.pressureBar} bar
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-900 border border-slate-800">
+                  <span className="text-slate-400 text-[10px]">{isAr ? 'التدفق:' : 'Flow:'}</span>
+                  <span className="text-emerald-400 font-bold">
+                    {parcel.irrigationTelemetry.flowRateLps} L/s
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Recharts Chart Container */}
+            <div className="h-60 w-full pt-2">
+              {(() => {
+                // Prepare or fallback time series
+                const chartData = (parcel.telemetryHistorical && parcel.telemetryHistorical.length > 0)
+                  ? parcel.telemetryHistorical
+                  : [
+                      { timestamp: "00:00", pressureBar: Number((parcel.irrigationTelemetry.pressureBar * 0.98).toFixed(2)), flowRateLps: Math.round(parcel.irrigationTelemetry.flowRateLps * 0.97), nominalPressure: 3.8 },
+                      { timestamp: "03:00", pressureBar: Number((parcel.irrigationTelemetry.pressureBar * 1.01).toFixed(2)), flowRateLps: Math.round(parcel.irrigationTelemetry.flowRateLps * 0.99), nominalPressure: 3.8 },
+                      { timestamp: "06:00", pressureBar: Number((parcel.irrigationTelemetry.pressureBar * 1.03).toFixed(2)), flowRateLps: Math.round(parcel.irrigationTelemetry.flowRateLps * 1.02), nominalPressure: 3.8 },
+                      { timestamp: "09:00", pressureBar: Number((parcel.irrigationTelemetry.pressureBar * 1.00).toFixed(2)), flowRateLps: Math.round(parcel.irrigationTelemetry.flowRateLps * 1.00), nominalPressure: 3.8 },
+                      { timestamp: "12:00", pressureBar: Number((parcel.irrigationTelemetry.pressureBar * 0.95).toFixed(2)), flowRateLps: Math.round(parcel.irrigationTelemetry.flowRateLps * 0.94), nominalPressure: 3.8 },
+                      { timestamp: "15:00", pressureBar: Number((parcel.irrigationTelemetry.pressureBar * 0.97).toFixed(2)), flowRateLps: Math.round(parcel.irrigationTelemetry.flowRateLps * 0.96), nominalPressure: 3.8 },
+                      { timestamp: "18:00", pressureBar: Number((parcel.irrigationTelemetry.pressureBar * 1.02).toFixed(2)), flowRateLps: Math.round(parcel.irrigationTelemetry.flowRateLps * 1.03), nominalPressure: 3.8 },
+                      { timestamp: "21:00", pressureBar: Number(parcel.irrigationTelemetry.pressureBar.toFixed(2)), flowRateLps: Math.round(parcel.irrigationTelemetry.flowRateLps), nominalPressure: 3.8 }
+                    ];
+
+                return (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.6} />
+                      <XAxis 
+                        dataKey="timestamp" 
+                        stroke="#64748b" 
+                        fontSize={11} 
+                        tickLine={false}
+                        fontFamily="monospace"
+                      />
+                      {/* Left Axis: Hydraulic Pressure (bar) */}
+                      <YAxis 
+                        yAxisId="left" 
+                        orientation="left" 
+                        domain={[0, 5]} 
+                        stroke="#38bdf8" 
+                        fontSize={11} 
+                        tickLine={false}
+                        fontFamily="monospace"
+                        unit=" b"
+                      />
+                      {/* Right Axis: Flow Rate (L/s) */}
+                      <YAxis 
+                        yAxisId="right" 
+                        orientation="right" 
+                        domain={[0, 150]} 
+                        stroke="#10b981" 
+                        fontSize={11} 
+                        tickLine={false}
+                        fontFamily="monospace"
+                        unit=" L/s"
+                      />
+                      <Tooltip 
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div className="bg-slate-900/95 border border-slate-700 p-2.5 rounded-lg shadow-xl font-mono text-xs space-y-1">
+                                <div className="text-slate-400 font-bold border-b border-slate-800 pb-1">
+                                  {isAr ? `التوقيت: ${label}` : `Time: ${label}`}
+                                </div>
+                                <div className="text-cyan-400 flex items-center justify-between gap-3">
+                                  <span>{isAr ? 'ضغط الري:' : 'Pressure:'}</span>
+                                  <span className="font-bold">{payload[0]?.value} bar</span>
+                                </div>
+                                <div className="text-emerald-400 flex items-center justify-between gap-3">
+                                  <span>{isAr ? 'معدل التدفق:' : 'Flow Rate:'}</span>
+                                  <span className="font-bold">{payload[1]?.value} L/s</span>
+                                </div>
+                                <div className="text-amber-400/80 text-[10px] flex items-center justify-between gap-3 pt-0.5 border-t border-slate-800/80">
+                                  <span>{isAr ? 'الضغط الاسمي:' : 'Nominal Threshold:'}</span>
+                                  <span>3.0 bar</span>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }} 
+                      />
+                      <Legend 
+                        wrapperStyle={{ fontSize: '11px', paddingTop: '6px' }}
+                        formatter={(value) => {
+                          if (value === 'pressureBar') return isAr ? 'ضغط الري (bar)' : 'Pressure (bar)';
+                          if (value === 'flowRateLps') return isAr ? 'تدفق المياه (L/s)' : 'Flow Rate (L/s)';
+                          return value;
+                        }}
+                      />
+                      {/* Critical Low Pressure Threshold Line at 3.0 bar */}
+                      <ReferenceLine 
+                        yAxisId="left" 
+                        y={3.0} 
+                        stroke="#f43f5e" 
+                        strokeDasharray="4 4" 
+                        label={{
+                          value: isAr ? 'عتبة الأمان (3.0 bar)' : 'P1 SLA Floor (3.0 bar)',
+                          fill: '#f43f5e',
+                          fontSize: 10,
+                          position: 'insideTopLeft'
+                        }}
+                      />
+                      <Line 
+                        yAxisId="left" 
+                        type="monotone" 
+                        dataKey="pressureBar" 
+                        stroke="#38bdf8" 
+                        strokeWidth={2.5} 
+                        dot={{ r: 3, fill: '#38bdf8', strokeWidth: 1, stroke: '#0f172a' }}
+                        activeDot={{ r: 6, fill: '#38bdf8' }}
+                        name="pressureBar"
+                      />
+                      <Line 
+                        yAxisId="right" 
+                        type="monotone" 
+                        dataKey="flowRateLps" 
+                        stroke="#10b981" 
+                        strokeWidth={2.5} 
+                        dot={{ r: 3, fill: '#10b981', strokeWidth: 1, stroke: '#0f172a' }}
+                        activeDot={{ r: 6, fill: '#10b981' }}
+                        name="flowRateLps"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                );
+              })()}
+            </div>
+
+            {/* Telemetry Summary Footer */}
+            <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] text-slate-400 font-mono flex-wrap gap-2">
+              <div className="flex items-center gap-1.5">
+                <Waves className="w-3.5 h-3.5 text-cyan-400" />
+                <span>
+                  {isAr 
+                    ? `دوران ذراع الرش: ${parcel.irrigationTelemetry.armRotationDeg}° · سرعة المحور: ${parcel.irrigationTelemetry.speedPercent}%`
+                    : `Arm Angle: ${parcel.irrigationTelemetry.armRotationDeg}° · Pivot Speed: ${parcel.irrigationTelemetry.speedPercent}%`}
+                </span>
+              </div>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                parcel.irrigationTelemetry.pressureBar >= 3.0
+                  ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                  : 'bg-rose-950 text-rose-400 border border-rose-800 animate-pulse'
+              }`}>
+                {parcel.irrigationTelemetry.pressureBar >= 3.0
+                  ? (isAr ? 'الضغط الهيدروليكي مستقر' : 'Hydraulic Nominal')
+                  : (isAr ? 'تحذير: هبوط حاد في الضغط' : 'Warning: Hydraulic Pressure Drop')}
+              </span>
             </div>
           </div>
 

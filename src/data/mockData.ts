@@ -55,6 +55,16 @@ export const INITIAL_PARCELS: ParcelAsset[] = [
       isActive: true,
       speedPercent: 65
     },
+    telemetryHistorical: [
+      { timestamp: "00:00", pressureBar: 3.75, flowRateLps: 110, nominalPressure: 3.8 },
+      { timestamp: "03:00", pressureBar: 3.80, flowRateLps: 112, nominalPressure: 3.8 },
+      { timestamp: "06:00", pressureBar: 3.85, flowRateLps: 114, nominalPressure: 3.8 },
+      { timestamp: "09:00", pressureBar: 3.82, flowRateLps: 113, nominalPressure: 3.8 },
+      { timestamp: "12:00", pressureBar: 3.78, flowRateLps: 111, nominalPressure: 3.8 },
+      { timestamp: "15:00", pressureBar: 3.79, flowRateLps: 112, nominalPressure: 3.8 },
+      { timestamp: "18:00", pressureBar: 3.84, flowRateLps: 115, nominalPressure: 3.8 },
+      { timestamp: "21:00", pressureBar: 3.80, flowRateLps: 112, nominalPressure: 3.8 }
+    ],
     expectedHarvestDate: "2026-11-28",
     lastFertilization: "2026-09-29 (NPK 20-20-20)"
   },
@@ -103,6 +113,16 @@ export const INITIAL_PARCELS: ParcelAsset[] = [
       isActive: true,
       speedPercent: 40
     },
+    telemetryHistorical: [
+      { timestamp: "00:00", pressureBar: 3.80, flowRateLps: 110, nominalPressure: 3.8 },
+      { timestamp: "03:00", pressureBar: 3.70, flowRateLps: 108, nominalPressure: 3.8 },
+      { timestamp: "06:00", pressureBar: 3.40, flowRateLps: 98, nominalPressure: 3.8 },
+      { timestamp: "09:00", pressureBar: 2.90, flowRateLps: 84, nominalPressure: 3.8 },
+      { timestamp: "12:00", pressureBar: 2.30, flowRateLps: 71, nominalPressure: 3.8 },
+      { timestamp: "15:00", pressureBar: 1.95, flowRateLps: 62, nominalPressure: 3.8 },
+      { timestamp: "18:00", pressureBar: 1.80, flowRateLps: 58, nominalPressure: 3.8 },
+      { timestamp: "21:00", pressureBar: 1.80, flowRateLps: 58, nominalPressure: 3.8 }
+    ],
     expectedHarvestDate: "2026-10-30",
     lastFertilization: "2026-09-18 (Humic Acid)"
   },
@@ -143,6 +163,16 @@ export const INITIAL_PARCELS: ParcelAsset[] = [
       isActive: true,
       speedPercent: 80
     },
+    telemetryHistorical: [
+      { timestamp: "00:00", pressureBar: 4.05, flowRateLps: 116, nominalPressure: 4.0 },
+      { timestamp: "03:00", pressureBar: 4.10, flowRateLps: 118, nominalPressure: 4.0 },
+      { timestamp: "06:00", pressureBar: 4.12, flowRateLps: 119, nominalPressure: 4.0 },
+      { timestamp: "09:00", pressureBar: 4.08, flowRateLps: 117, nominalPressure: 4.0 },
+      { timestamp: "12:00", pressureBar: 4.02, flowRateLps: 115, nominalPressure: 4.0 },
+      { timestamp: "15:00", pressureBar: 4.06, flowRateLps: 117, nominalPressure: 4.0 },
+      { timestamp: "18:00", pressureBar: 4.14, flowRateLps: 120, nominalPressure: 4.0 },
+      { timestamp: "21:00", pressureBar: 4.10, flowRateLps: 118, nominalPressure: 4.0 }
+    ],
     expectedHarvestDate: "2026-12-14",
     lastFertilization: "2026-10-02 (Urea 46%)"
   },
@@ -183,6 +213,16 @@ export const INITIAL_PARCELS: ParcelAsset[] = [
       isActive: true,
       speedPercent: 70
     },
+    telemetryHistorical: [
+      { timestamp: "00:00", pressureBar: 3.88, flowRateLps: 122, nominalPressure: 3.9 },
+      { timestamp: "03:00", pressureBar: 3.90, flowRateLps: 124, nominalPressure: 3.9 },
+      { timestamp: "06:00", pressureBar: 3.92, flowRateLps: 125, nominalPressure: 3.9 },
+      { timestamp: "09:00", pressureBar: 3.89, flowRateLps: 123, nominalPressure: 3.9 },
+      { timestamp: "12:00", pressureBar: 3.85, flowRateLps: 121, nominalPressure: 3.9 },
+      { timestamp: "15:00", pressureBar: 3.87, flowRateLps: 122, nominalPressure: 3.9 },
+      { timestamp: "18:00", pressureBar: 3.94, flowRateLps: 126, nominalPressure: 3.9 },
+      { timestamp: "21:00", pressureBar: 3.90, flowRateLps: 124, nominalPressure: 3.9 }
+    ],
     expectedHarvestDate: "2026-11-10",
     lastFertilization: "2026-10-04 (Chelated Zinc & Potash)"
   }
