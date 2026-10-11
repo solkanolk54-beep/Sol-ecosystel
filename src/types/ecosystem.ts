@@ -145,6 +145,8 @@ export interface WorkOrder {
   photoEvidenceUrl?: string;
   technicianSignature?: string;
   isOfflineSynced?: boolean;
+  isArchived?: boolean;
+  archivedAt?: string;
 }
 
 export interface OperationsKPIs {

@@ -20,7 +20,11 @@ import {
   Navigation,
   Smartphone,
   Mail,
-  Eye
+  Eye,
+  Archive,
+  ArchiveRestore,
+  Inbox,
+  Search
 } from 'lucide-react';
 import { 
   SystemEvent, 
@@ -42,6 +46,8 @@ interface OperationsCenterProps {
   onDispatchStressWorkOrder: (parcel: ParcelAsset) => void;
   onDispatchGrazingWorkOrder: (herd: LivestockHerd) => void;
   onCompleteWorkOrder: (orderId: string, notes: string) => void;
+  onArchiveWorkOrder?: (orderId: string) => void;
+  onUnarchiveWorkOrder?: (orderId: string) => void;
   onRecenterFleetCorridor: (fleetId: string) => void;
   onOpenMobileSimulatorWithOrder?: (order: WorkOrder) => void;
   emailAlerts?: AutomatedEmailAlert[];
@@ -59,6 +65,8 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
   onDispatchStressWorkOrder,
   onDispatchGrazingWorkOrder,
   onCompleteWorkOrder,
+  onArchiveWorkOrder,
+  onUnarchiveWorkOrder,
   onRecenterFleetCorridor,
   onOpenMobileSimulatorWithOrder,
   emailAlerts = [],
@@ -70,6 +78,45 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
   const [selectedEventForInspection, setSelectedEventForInspection] = useState<SystemEvent | null>(null);
   const [resolvingOrderId, setResolvingOrderId] = useState<string | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
+
+  // Archive Filter State: 'active' (default: hides archived), 'archived' (only archived), 'all' (all orders)
+  const [workOrderFilter, setWorkOrderFilter] = useState<'active' | 'archived' | 'all'>('active');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Local fallback archive set in case parent didn't manage it directly
+  const [localArchivedIds, setLocalArchivedIds] = useState<Set<string>>(new Set());
+
+  const handleArchive = (orderId: string) => {
+    setLocalArchivedIds((prev) => new Set([...prev, orderId]));
+    if (onArchiveWorkOrder) {
+      onArchiveWorkOrder(orderId);
+    }
+  };
+
+  const handleUnarchive = (orderId: string) => {
+    setLocalArchivedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(orderId);
+      return next;
+    });
+    if (onUnarchiveWorkOrder) {
+      onUnarchiveWorkOrder(orderId);
+    }
+  };
+
+  const isOrderArchived = (order: WorkOrder) => {
+    return order.isArchived || localArchivedIds.has(order.order_id);
+  };
+
+  // Archive & active counts
+  const archivedOrdersCount = workOrders.filter(isOrderArchived).length;
+  const activeOrdersCount = workOrders.length - archivedOrdersCount;
+  const completedUnarchivedCount = workOrders.filter((wo) => wo.status === 'COMPLETED' && !isOrderArchived(wo)).length;
+
+  const handleArchiveAllCompleted = () => {
+    const completedOrders = workOrders.filter((wo) => wo.status === 'COMPLETED' && !isOrderArchived(wo));
+    completedOrders.forEach((wo) => handleArchive(wo.order_id));
+  };
 
   // Active stress parcel
   const stressedPivot = parcels.find(p => p.status === 'STRESSED' || p.ndviAverage < 0.45);
@@ -119,9 +166,15 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
             }`}
           >
             <span>{isAr ? 'أوامر العمل' : 'Work Orders'}</span>
-            <span className="w-4 h-4 rounded-full bg-slate-800 text-slate-300 text-[10px] flex items-center justify-center font-mono">
-              {workOrders.length}
+            <span className="px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 text-[10px] flex items-center justify-center font-mono">
+              {activeOrdersCount}
             </span>
+            {archivedOrdersCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-slate-900 border border-slate-700 text-slate-400 text-[10px] flex items-center gap-0.5 font-mono" title={isAr ? `مؤرشف: ${archivedOrdersCount}` : `Archived: ${archivedOrdersCount}`}>
+                <Archive className="w-2.5 h-2.5 text-slate-400" />
+                <span>{archivedOrdersCount}</span>
+              </span>
+            )}
           </button>
 
           <button
@@ -348,139 +401,312 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
         {/* Tab 2: Dispatched Work Orders */}
         {activeTab === 'workOrders' && (
           <div className="space-y-3">
-            {workOrders.map((order) => {
-              const isCompleted = order.status === 'COMPLETED';
+            {/* Archive Toolbar & Filters */}
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                {/* Filter Selector */}
+                <div className="flex items-center p-0.5 bg-slate-950 rounded-lg border border-slate-800 text-xs">
+                  <button
+                    onClick={() => setWorkOrderFilter('active')}
+                    className={`px-2.5 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+                      workOrderFilter === 'active'
+                        ? 'bg-emerald-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Inbox className="w-3.5 h-3.5" />
+                    <span>{isAr ? 'الأوامر النشطة' : 'Active Orders'}</span>
+                    <span className="w-4 h-4 rounded-full bg-slate-900 text-slate-200 text-[10px] flex items-center justify-center font-mono">
+                      {activeOrdersCount}
+                    </span>
+                  </button>
 
-              return (
-                <div
-                  key={order.order_id}
-                  className={`p-3.5 rounded-lg border text-xs space-y-2.5 transition-colors ${
-                    isCompleted
-                      ? 'bg-slate-900/40 border-slate-800 opacity-80'
-                      : 'bg-slate-900/80 border-slate-700 shadow-md'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-cyan-400">{order.order_id}</span>
-                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
-                        isCompleted
-                          ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                          : 'bg-amber-950 text-amber-400 border border-amber-800'
-                      }`}>
-                        {order.status}
-                      </span>
-                      <span className="text-[10px] text-slate-500 font-mono">ETA: {order.etaMinutes} mins</span>
-                    </div>
+                  <button
+                    onClick={() => setWorkOrderFilter('archived')}
+                    className={`px-2.5 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+                      workOrderFilter === 'archived'
+                        ? 'bg-amber-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Archive className="w-3.5 h-3.5" />
+                    <span>{isAr ? 'الأرشيف الجانبي' : 'Archive Vault'}</span>
+                    <span className="w-4 h-4 rounded-full bg-slate-900 text-slate-200 text-[10px] flex items-center justify-center font-mono">
+                      {archivedOrdersCount}
+                    </span>
+                  </button>
 
-                    <span className="text-[11px] text-slate-400 font-mono">{order.createdAt}</span>
-                  </div>
+                  <button
+                    onClick={() => setWorkOrderFilter('all')}
+                    className={`px-2 py-1 rounded-md font-medium transition-colors ${
+                      workOrderFilter === 'all'
+                        ? 'bg-slate-700 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {isAr ? 'الكل' : 'All'} ({workOrders.length})
+                  </button>
+                </div>
 
-                  <div>
-                    <h4 className="text-xs font-bold text-white">
-                      {isAr ? order.title : order.titleEn}
-                    </h4>
-                    <p className="text-xs text-slate-300/90 mt-1">
-                      {isAr ? order.description : order.descriptionEn}
-                    </p>
-                  </div>
+                {/* Bulk Archive Completed button */}
+                {completedUnarchivedCount > 0 && workOrderFilter === 'active' && (
+                  <button
+                    onClick={handleArchiveAllCompleted}
+                    className="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-amber-200 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
+                    title={isAr ? 'نقل جميع الأوامر المكتملة إلى الأرشيف الجانبي لتقليل الفوضى' : 'Archive all completed orders to side vault'}
+                  >
+                    <Archive className="w-3.5 h-3.5 text-amber-400" />
+                    <span>{isAr ? `أرشفة المكتمل (${completedUnarchivedCount})` : `Archive Completed (${completedUnarchivedCount})`}</span>
+                  </button>
+                )}
+              </div>
 
-                  <div className="p-2 rounded bg-slate-950 border border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 font-mono">
-                    <div>
-                      <span className="text-slate-500">{isAr ? 'الفني المكلف: ' : 'Assigned Tech: '}</span>
-                      <span className="text-slate-200">{order.assignedTechnician}</span>
-                    </div>
-                    {order.assignedFleetId && (
-                      <div>
-                        <span className="text-slate-500">{isAr ? 'المركبة: ' : 'Vehicle: '}</span>
-                        <span className="text-cyan-300">{order.assignedFleetId}</span>
-                      </div>
+              {/* Search Bar */}
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder={isAr ? 'بحث برقم الأمر، الفني، أو الأصل...' : 'Filter by order ID, technician, or asset...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-md pl-8 pr-3 py-1 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Work Orders List */}
+            {(() => {
+              const filteredOrders = workOrders
+                .filter((order) => {
+                  const archived = isOrderArchived(order);
+                  if (workOrderFilter === 'active') return !archived;
+                  if (workOrderFilter === 'archived') return archived;
+                  return true;
+                })
+                .filter((order) => {
+                  if (!searchQuery.trim()) return true;
+                  const q = searchQuery.toLowerCase();
+                  return (
+                    order.order_id.toLowerCase().includes(q) ||
+                    order.assetName.toLowerCase().includes(q) ||
+                    order.title.toLowerCase().includes(q) ||
+                    order.titleEn.toLowerCase().includes(q) ||
+                    order.assignedTechnician.toLowerCase().includes(q)
+                  );
+                });
+
+              if (filteredOrders.length === 0) {
+                return (
+                  <div className="p-8 text-center text-slate-500 text-xs bg-slate-900/30 rounded-xl border border-slate-850">
+                    {workOrderFilter === 'archived' ? (
+                      <>
+                        <Archive className="w-8 h-8 text-slate-600 mx-auto mb-2 opacity-50" />
+                        <p className="font-semibold text-slate-400">
+                          {isAr ? 'الأرشيف الجانبي فارغ حالياً' : 'Archive vault is currently empty'}
+                        </p>
+                        <p className="text-[11px] text-slate-500 mt-1">
+                          {isAr
+                            ? 'يمكنك أرشفة أوامر العمل المكتملة بنقرة واحدة لإبقاء واجهة العمليات الحالية خالية من الفوضى.'
+                            : 'You can archive completed work orders to keep the live operations console decluttered.'}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Inbox className="w-8 h-8 text-slate-600 mx-auto mb-2 opacity-50" />
+                        <p className="font-semibold text-slate-400">
+                          {isAr ? 'لا توجد أوامر عمل مطابقة' : 'No matching work orders found'}
+                        </p>
+                      </>
                     )}
-                    <div>
-                      <span className="text-slate-500">BBOX: </span>
-                      <span className="text-slate-300">[{order.bbox.minLat}, {order.bbox.minLng}]</span>
-                    </div>
                   </div>
+                );
+              }
 
-                  {/* Completion resolution notes if completed */}
-                  {order.completionNotes && (
-                    <div className="p-2 rounded bg-emerald-950/30 border border-emerald-900/50 text-[11px] text-emerald-300">
-                      <span className="font-bold">{isAr ? 'تقرير الإنجاز الميداني: ' : 'Field Resolution Report: '}</span>
-                      <span>{order.completionNotes}</span>
+              return filteredOrders.map((order) => {
+                const isCompleted = order.status === 'COMPLETED';
+                const archived = isOrderArchived(order);
+
+                return (
+                  <div
+                    key={order.order_id}
+                    className={`p-3.5 rounded-lg border text-xs space-y-2.5 transition-colors ${
+                      archived
+                        ? 'bg-slate-950/60 border-slate-800 border-dashed text-slate-400'
+                        : isCompleted
+                        ? 'bg-slate-900/40 border-slate-800 opacity-90'
+                        : 'bg-slate-900/80 border-slate-700 shadow-md'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono font-bold text-cyan-400">{order.order_id}</span>
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
+                          isCompleted
+                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                            : 'bg-amber-950 text-amber-400 border border-amber-800'
+                        }`}>
+                          {order.status}
+                        </span>
+                        {archived && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700 font-bold flex items-center gap-1">
+                            <Archive className="w-2.5 h-2.5 text-amber-400" />
+                            <span>{isAr ? 'مؤرشف' : 'ARCHIVED'}</span>
+                          </span>
+                        )}
+                        <span className="text-[10px] text-slate-500 font-mono">ETA: {order.etaMinutes} mins</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {archived && order.archivedAt && (
+                          <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">
+                            {isAr ? 'أرشف في: ' : 'Archived: '}
+                            {order.archivedAt.slice(11, 16)}
+                          </span>
+                        )}
+                        <span className="text-[11px] text-slate-400 font-mono">{order.createdAt}</span>
+                      </div>
                     </div>
-                  )}
 
-                  {/* Complete Action */}
-                  {!isCompleted && (
-                    <div className="pt-1 flex items-center justify-end gap-2">
-                      {resolvingOrderId === order.order_id ? (
-                        <div className="flex items-center gap-2 w-full">
-                          <input
-                            type="text"
-                            placeholder={isAr ? 'أدخل ملاحظات الصيانة الميدانية...' : 'Enter field maintenance notes...'}
-                            value={resolutionNotes}
-                            onChange={(e) => setResolutionNotes(e.target.value)}
-                            className="flex-1 bg-slate-950 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"
-                          />
-                          <button
-                            onClick={() => {
-                              onCompleteWorkOrder(order.order_id, resolutionNotes || (isAr ? 'تم استبدال الفوهات التالفة واستعادة ضغط الري بنجاح إلى 3.9 بار.' : 'Replaced damaged nozzles and restored pressure to 3.9 bar.'));
-                              setResolvingOrderId(null);
-                              setResolutionNotes('');
-                            }}
-                            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold"
-                          >
-                            {isAr ? 'تأكيد الإنجاز' : 'Confirm'}
-                          </button>
-                          <button
-                            onClick={() => setResolvingOrderId(null)}
-                            className="px-2 py-1 bg-slate-800 text-slate-400 rounded text-xs"
-                          >
-                            {isAr ? 'إلغاء' : 'Cancel'}
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          {onOpenMobileSimulatorWithOrder && (
-                            <button
-                              onClick={() => onOpenMobileSimulatorWithOrder(order)}
-                              className="px-2.5 py-1 rounded bg-cyan-950/60 hover:bg-cyan-900 text-cyan-300 text-xs font-medium border border-cyan-700/60 transition-colors flex items-center gap-1.5"
-                              title="Inspect on Kareema Mobile Field App"
-                            >
-                              <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
-                              <span>{isAr ? 'تطبيق Kareema الميداني' : 'Kareema Mobile App'}</span>
-                            </button>
-                          )}
-                          <button
-                            onClick={() => setResolvingOrderId(order.order_id)}
-                            className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors"
-                          >
-                            {isAr ? 'تسجيل إنجاز المهمة الميدانية' : 'Mark Completed with Report'}
-                          </button>
+                    <div>
+                      <h4 className="text-xs font-bold text-white">
+                        {isAr ? order.title : order.titleEn}
+                      </h4>
+                      <p className="text-xs text-slate-300/90 mt-1">
+                        {isAr ? order.description : order.descriptionEn}
+                      </p>
+                    </div>
+
+                    <div className="p-2 rounded bg-slate-950 border border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 font-mono">
+                      <div>
+                        <span className="text-slate-500">{isAr ? 'الفني المكلف: ' : 'Assigned Tech: '}</span>
+                        <span className="text-slate-200">{order.assignedTechnician}</span>
+                      </div>
+                      {order.assignedFleetId && (
+                        <div>
+                          <span className="text-slate-500">{isAr ? 'المركبة: ' : 'Vehicle: '}</span>
+                          <span className="text-cyan-300">{order.assignedFleetId}</span>
                         </div>
                       )}
-                    </div>
-                  )}
-
-                  {/* Email Alert Banner for P1 Drought Orders */}
-                  {(order.severity === 'CRITICAL' || order.order_id.includes('CRISIS') || order.slaLevel === 'P1_CRITICAL') && (
-                    <div className="pt-2 mt-2 border-t border-slate-800/80 flex items-center justify-between gap-2 flex-wrap">
-                      <div className="flex items-center gap-1.5 text-[11px] text-rose-400 font-mono">
-                        <Mail className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
-                        <span>{isAr ? 'تم إرسال إيميل P1 آلي للفني الميداني' : 'Automated P1 email dispatched to technician'}</span>
+                      <div>
+                        <span className="text-slate-500">BBOX: </span>
+                        <span className="text-slate-300">[{order.bbox.minLat}, {order.bbox.minLng}]</span>
                       </div>
-                      <button
-                        onClick={() => onOpenEmailModalWithOrder ? onOpenEmailModalWithOrder(order.order_id) : onOpenEmailModal ? onOpenEmailModal() : undefined}
-                        className="px-2 py-0.5 rounded bg-rose-950/80 hover:bg-rose-900 text-rose-300 hover:text-white border border-rose-800 text-[10px] font-bold font-mono flex items-center gap-1 transition-colors cursor-pointer"
-                      >
-                        <Eye className="w-3 h-3 text-rose-400" />
-                        <span>{isAr ? 'معاينة البريد' : 'Preview Email'}</span>
-                      </button>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+
+                    {/* Completion resolution notes if completed */}
+                    {order.completionNotes && (
+                      <div className="p-2 rounded bg-emerald-950/30 border border-emerald-900/50 text-[11px] text-emerald-300">
+                        <span className="font-bold">{isAr ? 'تقرير الإنجاز الميداني: ' : 'Field Resolution Report: '}</span>
+                        <span>{order.completionNotes}</span>
+                      </div>
+                    )}
+
+                    {/* Actions Row */}
+                    <div className="pt-1 flex items-center justify-between gap-2 flex-wrap">
+                      {/* Left: Archive/Unarchive Controls */}
+                      <div>
+                        {archived ? (
+                          <button
+                            onClick={() => handleUnarchive(order.order_id)}
+                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
+                            title={isAr ? 'استعادة الأمر إلى واجهة العمليات النشطة' : 'Restore order to active operations'}
+                          >
+                            <ArchiveRestore className="w-3.5 h-3.5 text-cyan-400" />
+                            <span>{isAr ? 'استعادة للعمليات النشطة' : 'Restore to Active'}</span>
+                          </button>
+                        ) : isCompleted ? (
+                          <button
+                            onClick={() => handleArchive(order.order_id)}
+                            className="px-2.5 py-1 rounded bg-slate-800/80 hover:bg-slate-700 text-amber-300 hover:text-amber-200 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
+                            title={isAr ? 'نقل الأمر المكتمل إلى الأرشيف الجانبي لتقليل الفوضى' : 'Move completed order to side archive to reduce clutter'}
+                          >
+                            <Archive className="w-3.5 h-3.5 text-amber-400" />
+                            <span>{isAr ? 'نقل للأرشيف (Archive)' : 'Move to Archive'}</span>
+                          </button>
+                        ) : null}
+                      </div>
+
+                      {/* Right: Complete & Mobile Simulator Actions */}
+                      {!isCompleted ? (
+                        <div className="flex items-center gap-2">
+                          {resolvingOrderId === order.order_id ? (
+                            <div className="flex items-center gap-2 w-full">
+                              <input
+                                type="text"
+                                placeholder={isAr ? 'أدخل ملاحظات الصيانة الميدانية...' : 'Enter field maintenance notes...'}
+                                value={resolutionNotes}
+                                onChange={(e) => setResolutionNotes(e.target.value)}
+                                className="flex-1 bg-slate-950 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"
+                              />
+                              <button
+                                onClick={() => {
+                                  onCompleteWorkOrder(order.order_id, resolutionNotes || (isAr ? 'تم استبدال الفوهات التالفة واستعادة ضغط الري بنجاح إلى 3.9 بار.' : 'Replaced damaged nozzles and restored pressure to 3.9 bar.'));
+                                  setResolvingOrderId(null);
+                                  setResolutionNotes('');
+                                }}
+                                className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold"
+                              >
+                                {isAr ? 'تأكيد الإنجاز' : 'Confirm'}
+                              </button>
+                              <button
+                                onClick={() => setResolvingOrderId(null)}
+                                className="px-2 py-1 bg-slate-800 text-slate-400 rounded text-xs"
+                              >
+                                {isAr ? 'إلغاء' : 'Cancel'}
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              {onOpenMobileSimulatorWithOrder && (
+                                <button
+                                  onClick={() => onOpenMobileSimulatorWithOrder(order)}
+                                  className="px-2.5 py-1 rounded bg-cyan-950/60 hover:bg-cyan-900 text-cyan-300 text-xs font-medium border border-cyan-700/60 transition-colors flex items-center gap-1.5"
+                                  title="Inspect on Kareema Mobile Field App"
+                                >
+                                  <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
+                                  <span>{isAr ? 'تطبيق Kareema الميداني' : 'Kareema Mobile App'}</span>
+                                </button>
+                              )}
+                              <button
+                                onClick={() => setResolvingOrderId(order.order_id)}
+                                className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors"
+                              >
+                                {isAr ? 'تسجيل إنجاز المهمة الميدانية' : 'Mark Completed with Report'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {/* Email Alert Banner for P1 Drought Orders */}
+                    {(order.severity === 'CRITICAL' || order.order_id.includes('CRISIS') || order.slaLevel === 'P1_CRITICAL') && (
+                      <div className="pt-2 mt-2 border-t border-slate-800/80 flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-1.5 text-[11px] text-rose-400 font-mono">
+                          <Mail className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+                          <span>{isAr ? 'تم إرسال إيميل P1 آلي للفني الميداني' : 'Automated P1 email dispatched to technician'}</span>
+                        </div>
+                        <button
+                          onClick={() => onOpenEmailModalWithOrder ? onOpenEmailModalWithOrder(order.order_id) : onOpenEmailModal ? onOpenEmailModal() : undefined}
+                          className="px-2 py-0.5 rounded bg-rose-950/80 hover:bg-rose-900 text-rose-300 hover:text-white border border-rose-800 text-[10px] font-bold font-mono flex items-center gap-1 transition-colors cursor-pointer"
+                        >
+                          <Eye className="w-3 h-3 text-rose-400" />
+                          <span>{isAr ? 'معاينة البريد' : 'Preview Email'}</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              });
+            })()}
           </div>
         )}
 

@@ -400,6 +400,57 @@ export default function App() {
     }));
   };
 
+  // Handler: Archive a Completed Field Work Order
+  const handleArchiveWorkOrder = (orderId: string) => {
+    setWorkOrders((prev) =>
+      prev.map((wo) =>
+        wo.order_id === orderId
+          ? {
+              ...wo,
+              isArchived: true,
+              archivedAt: new Date().toISOString()
+            }
+          : wo
+      )
+    );
+
+    eventBus.publish({
+      topic: 'atlas.work-orders.v1',
+      eventType: 'EVENT_WORK_ORDER_DISPATCHED',
+      sourceSystem: 'AtlasCloud',
+      payload: {
+        order_id: orderId,
+        action: 'WORK_ORDER_ARCHIVED_TO_SIDE_VAULT',
+        archived_at: new Date().toISOString()
+      }
+    });
+  };
+
+  // Handler: Restore/Unarchive an Archived Work Order
+  const handleUnarchiveWorkOrder = (orderId: string) => {
+    setWorkOrders((prev) =>
+      prev.map((wo) =>
+        wo.order_id === orderId
+          ? {
+              ...wo,
+              isArchived: false,
+              archivedAt: undefined
+            }
+          : wo
+      )
+    );
+
+    eventBus.publish({
+      topic: 'atlas.work-orders.v1',
+      eventType: 'EVENT_WORK_ORDER_DISPATCHED',
+      sourceSystem: 'AtlasCloud',
+      payload: {
+        order_id: orderId,
+        action: 'WORK_ORDER_RESTORED_FROM_ARCHIVE'
+      }
+    });
+  };
+
   // Handler: Recenter Drone corridor
   const handleRecenterFleetCorridor = (fleetId: string) => {
     setFleet((prev) =>
@@ -637,6 +688,8 @@ export default function App() {
                   onDispatchStressWorkOrder={handleDispatchStressWorkOrder}
                   onDispatchGrazingWorkOrder={handleDispatchGrazingWorkOrder}
                   onCompleteWorkOrder={handleCompleteWorkOrder}
+                  onArchiveWorkOrder={handleArchiveWorkOrder}
+                  onUnarchiveWorkOrder={handleUnarchiveWorkOrder}
                   onRecenterFleetCorridor={handleRecenterFleetCorridor}
                   onOpenMobileSimulatorWithOrder={handleOpenMobileSimulatorWithOrder}
                   emailAlerts={emailAlerts}
