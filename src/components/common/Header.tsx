@@ -12,7 +12,8 @@ import {
   Layers,
   FileCheck2,
   Code2,
-  BookOpen
+  BookOpen,
+  Flame
 } from 'lucide-react';
 import { Language, SovereignCloudStatus, UserRole } from '../../types/ecosystem';
 
@@ -27,6 +28,7 @@ interface HeaderProps {
   onSimulateGrazing: () => void;
   onResetSimulation: () => void;
   onOpenSopManual?: () => void;
+  onOpenStressTestModal?: () => void;
   activeAlertCount: number;
 }
 
@@ -41,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSimulateGrazing,
   onResetSimulation,
   onOpenSopManual,
+  onOpenStressTestModal,
   activeAlertCount
 }) => {
   const isAr = language === 'ar';
@@ -161,8 +164,8 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
-            <Database className="w-3.5 h-3.5" />
-            <span>{isAr ? 'الحوكمة وسحابة AtlasCloud' : 'Sovereign Cloud'}</span>
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>{isAr ? 'الحوكمة السيادية والتتبع' : 'Sovereign Governance & Traceability'}</span>
           </button>
 
           <button
@@ -180,13 +183,25 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Live Simulation Trigger Controls */}
         <div className="flex items-center gap-2 flex-wrap">
+          {/* Dedicated Emergency Stress Test Protocol Button */}
+          {onOpenStressTestModal && (
+            <button
+              onClick={onOpenStressTestModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-md bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white shadow-md shadow-rose-950/50 border border-rose-400/40 transition-all cursor-pointer"
+              title="Open Emergency Stress Test (EXERCISE-DARK-DROUGHT-2026)"
+            >
+              <Flame className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
+              <span>{isAr ? 'اختبار الضغط: DARK-DROUGHT' : 'Stress Test: DARK-DROUGHT'}</span>
+            </button>
+          )}
+
           <button
             onClick={onSimulateStress}
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 transition-colors"
             title="SolVision -> AtlasCloud -> Kareema workflow test"
           >
             <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>{isAr ? 'محاكاة إجهاد محصول (SolVision)' : 'Simulate Crop Stress'}</span>
+            <span>{isAr ? 'إجهاد محصول (SolVision)' : 'Crop Stress'}</span>
           </button>
 
           <button
@@ -195,7 +210,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Kareema -> SolVision Rotational Grazing Alert test"
           >
             <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-            <span>{isAr ? 'محاكاة رعي جائر (Kareema)' : 'Simulate Overgrazing'}</span>
+            <span>{isAr ? 'رعي جائر (Kareema)' : 'Overgrazing'}</span>
           </button>
 
           <button

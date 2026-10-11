@@ -34,7 +34,6 @@ export const KareemaMobileSimulatorModal: React.FC<KareemaMobileSimulatorModalPr
   language,
   onCompleteWorkOrder
 }) => {
-  if (!isOpen || !workOrder) return null;
   const isAr = language === 'ar';
 
   const [isOffline, setIsOffline] = useState(false);
@@ -46,6 +45,8 @@ export const KareemaMobileSimulatorModal: React.FC<KareemaMobileSimulatorModalPr
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
+
+  if (!isOpen || !workOrder) return null;
 
   const handleSubmitReport = () => {
     setIsSubmitting(true);

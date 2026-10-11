@@ -378,10 +378,10 @@ export const GisMap: React.FC<GisMapProps> = ({
             );
           })}
 
-          {/* SolVision Automated Bounding Box for Stress Sector (Pivot 02 NE) */}
-          {showBbox && parcels.find(p => p.stressBbox) && (
-            (() => {
-              const p = parcels.find(p => p.stressBbox)!;
+          {/* SolVision Automated Bounding Box for Stress Sectors */}
+          {showBbox && parcels
+            .filter((p) => Boolean(p.stressBbox))
+            .map((p) => {
               const bbox = p.stressBbox!;
               const x1 = lngToX(bbox.minLng);
               const y1 = latToY(bbox.maxLat);
@@ -391,7 +391,7 @@ export const GisMap: React.FC<GisMapProps> = ({
               const height = Math.abs(y2 - y1);
 
               return (
-                <g key="stress-bbox" className="animate-in fade-in">
+                <g key={`stress-bbox-${p.asset_id}`} className="animate-in fade-in">
                   <rect
                     x={x1}
                     y={y1}
@@ -407,13 +407,12 @@ export const GisMap: React.FC<GisMapProps> = ({
                   <g transform={`translate(${x1}, ${y1 - 6})`}>
                     <rect x="0" y="-14" width="160" height="16" rx="2" fill="#881337" />
                     <text x="6" y="-2" fill="#fff" fontSize="9" fontFamily="monospace">
-                      ST_Envelope: [24.187N, 47.339E]
+                      ST_Envelope: [{bbox.minLat}N, {bbox.minLng}E]
                     </text>
                   </g>
                 </g>
               );
-            })()
-          )}
+            })}
 
           {/* Livestock Herds (Kareema RFID / Smart Rangeland) */}
           {showHerds && herds.map((herd) => {
@@ -614,13 +613,15 @@ export const GisMap: React.FC<GisMapProps> = ({
       </div>
 
       {/* Parcel Detail Modal */}
-      <ParcelDetailModal
-        parcel={selectedParcel}
-        onClose={() => setSelectedParcel(null)}
-        language={language}
-        onDispatchStressWorkOrder={onDispatchStressWorkOrder}
-        onViewPassport={onViewPassport}
-      />
+      {selectedParcel && (
+        <ParcelDetailModal
+          parcel={selectedParcel}
+          onClose={() => setSelectedParcel(null)}
+          language={language}
+          onDispatchStressWorkOrder={onDispatchStressWorkOrder}
+          onViewPassport={onViewPassport}
+        />
+      )}
 
       {/* Mini Inspector for Selected Fleet Unit */}
       {selectedFleetUnit && (

@@ -6,7 +6,8 @@ import {
   WorkOrder, 
   DigitalQualityPassport,
   SovereignCloudStatus,
-  OperationsKPIs
+  OperationsKPIs,
+  StressTestScorecardMetric
 } from '../types/ecosystem';
 
 export const INITIAL_PARCELS: ParcelAsset[] = [
@@ -752,4 +753,65 @@ export const SOP_SLA_MATRIX = [
     actionEn: 'Automated cryptographic health check and AES-256-GCM audit.'
   }
 ];
+
+export const STRESS_TEST_DEFAULT_SCORECARD: StressTestScorecardMetric[] = [
+  {
+    id: "MTR-01",
+    nameAr: "استجابة وضع عدم الاتصال (Offline Transition)",
+    nameEn: "Offline Mode Auto-Transition",
+    targetMetric: "< 5s (تحول تلقائي 100%)",
+    actualResult: "1.4s (تحول فوري دون إغلاق التطبيق)",
+    status: "SUCCESS",
+    detailsAr: "تم التبديل التلقائي إلى التخزين الآمن SQLite / PWA Offline Cache دون فقدان الجلسة.",
+    detailsEn: "Instant fallback to encrypted SQLite / PWA Cache with zero session interruption."
+  },
+  {
+    id: "MTR-02",
+    nameAr: "سلامة البيانات المحفوظة أوفلاين (Data Integrity)",
+    nameEn: "Preserved Offline Data Integrity",
+    targetMetric: "0% Data Loss (عدم ضياع أي صورة أو توقيع)",
+    actualResult: "12/12 تقرير صيانة مكتمل ومحفوظ محلياً",
+    status: "SUCCESS",
+    detailsAr: "تم حفظ 12 تقرير صيانة مصور مع التوقيعات الرقمية محلياً بحالة Pending_Sync بنجاح.",
+    detailsEn: "12/12 field reports with photos and digital signatures cached as Pending_Sync."
+  },
+  {
+    id: "MTR-03",
+    nameAr: "معدل زمن المزامنة عند عودة الشبكة (Reconciliation Rate)",
+    nameEn: "Reconnection Auto-Reconciliation Time",
+    targetMetric: "< 60s (إتمام مزامنة كافة الأحداث)",
+    actualResult: "18.2s (استكمال المزامنة والتشفير)",
+    status: "SUCCESS",
+    detailsAr: "اكتملت مزامنة حزمة البيانات المتراكمة وتثبيت السجلات في PostGIS خلال 18.2 ثانية.",
+    detailsEn: "Batch reconciliation into PostGIS and GeoServer completed in 18.2 seconds."
+  },
+  {
+    id: "MTR-04",
+    nameAr: "زمن التدخل الميداني الفعلي (MTTR under Crisis)",
+    nameEn: "Actual Field MTTR Under Crisis",
+    targetMetric: "< 20 min (استجابة P1 الميدانية)",
+    actualResult: "16.5 min (متوسط الوصول والتنفيذ الفعلي)",
+    status: "SUCCESS",
+    detailsAr: "حقق الفنيون زمن استجابة 16.5 دقيقة معتمدين على الخرائط المتجهية والـ GPS المعزول.",
+    detailsEn: "Field crews resolved acute stress in 16.5 min using cached vector GPS navigation."
+  },
+  {
+    id: "MTR-05",
+    nameAr: "التطابق التشفيري للتاريخ السلسلي (Sovereign Cryptographic Audit)",
+    nameEn: "Cryptographic Lineage Consistency",
+    targetMetric: "100% تطابق أختام SHA-256 و Merkle Roots",
+    actualResult: "100% مطابقة تامة وانعدام أي تعارض زمني",
+    status: "SUCCESS",
+    detailsAr: "تم توثيق كافة التقارير برقم crop_batch_id وختمها في خزانة AtlasCloud دون أي تصادم.",
+    detailsEn: "Zero cryptographic collisions; Merkle roots validated and permanently sealed."
+  }
+];
+
+export const STRESS_TEST_CRISIS_PIVOTS = [
+  { code: "PIVOT-01", sector: "القطاع الجنوبي الغربي SW-2", ndvi: 0.28, hectares: 14.2 },
+  { code: "PIVOT-01", sector: "القطاع الجنوبي الشرقي SE-3", ndvi: 0.26, hectares: 12.8 },
+  { code: "PIVOT-02", sector: "الربع الشمالي الشرقي NE-4", ndvi: 0.25, hectares: 18.5 },
+  { code: "PIVOT-04", sector: "الربع الغربي W-1", ndvi: 0.29, hectares: 15.0 }
+];
+
 

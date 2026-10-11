@@ -38,9 +38,10 @@ export const SopManualModal: React.FC<SopManualModalProps> = ({
   currentRole,
   onSelectRole
 }) => {
-  if (!isOpen) return null;
   const isAr = language === 'ar';
   const [activeSection, setActiveSection] = useState<'all' | 'roles' | 'sla' | 'workflow' | 'contingency' | 'kpis'>('all');
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-200">

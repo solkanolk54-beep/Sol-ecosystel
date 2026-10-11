@@ -31,7 +31,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
   onSealNewPassport
 }) => {
   const isAr = language === 'ar';
-  const [selectedPassport, setSelectedPassport] = useState<DigitalQualityPassport>(passports[0]);
+  const [selectedPassport, setSelectedPassport] = useState<DigitalQualityPassport | null>(passports[0] || null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showQrModal, setShowQrModal] = useState(false);
   const [verificationSuccess, setVerificationSuccess] = useState<string | null>(null);
@@ -41,6 +41,8 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
     p.parcelName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.parcelNameEn.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const activePassport = selectedPassport || filteredPassports[0] || passports[0];
 
   const verifyOnChain = (hash: string) => {
     setVerificationSuccess(hash);
@@ -88,7 +90,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
 
           <div className="space-y-2.5">
             {filteredPassports.map((passport) => {
-              const isSelected = selectedPassport.crop_batch_id === passport.crop_batch_id;
+              const isSelected = activePassport?.crop_batch_id === passport.crop_batch_id;
 
               return (
                 <div
@@ -142,10 +144,10 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
                   </span>
                 </div>
                 <p className="text-xs text-slate-300 font-mono mt-0.5">
-                  BATCH ID: <span className="text-cyan-400 font-bold">{selectedPassport.crop_batch_id}</span>
+                  BATCH ID: <span className="text-cyan-400 font-bold">{activePassport.crop_batch_id}</span>
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
-                  {isAr ? selectedPassport.parcelName : selectedPassport.parcelNameEn} · {isAr ? selectedPassport.cropVariety : selectedPassport.cropVarietyEn}
+                  {isAr ? activePassport.parcelName : activePassport.parcelNameEn} · {isAr ? activePassport.cropVariety : activePassport.cropVarietyEn}
                 </p>
               </div>
             </div>
@@ -161,7 +163,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
               </button>
 
               <button
-                onClick={() => verifyOnChain(selectedPassport.cryptographicSeal.hash)}
+                onClick={() => verifyOnChain(activePassport.cryptographicSeal.hash)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md transition-colors"
               >
                 <Lock className="w-3.5 h-3.5" />
@@ -189,7 +191,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
                 {isAr ? 'مؤشر خلو الإجهاد' : 'Stress-Free Index'}
               </span>
               <span className="text-xl font-bold font-mono text-emerald-400">
-                {selectedPassport.waterStressFreeIndex}%
+                {activePassport.waterStressFreeIndex}%
               </span>
               <span className="text-[10px] text-slate-500 block mt-0.5">SolVision Infrared</span>
             </div>
@@ -199,7 +201,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
                 {isAr ? 'نقاء التربة والصنف' : 'Soil Purity Score'}
               </span>
               <span className="text-xl font-bold font-mono text-teal-400">
-                {selectedPassport.soilPurityIndex}%
+                {activePassport.soilPurityIndex}%
               </span>
               <span className="text-[10px] text-slate-500 block mt-0.5">Heavy-Metals Free</span>
             </div>
@@ -209,7 +211,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
                 {isAr ? 'البصمة الكربونية' : 'Carbon Footprint'}
               </span>
               <span className="text-xl font-bold font-mono text-cyan-400">
-                {selectedPassport.carbonFootprintKgPerTon} <span className="text-xs font-normal text-slate-400">kg/t</span>
+                {activePassport.carbonFootprintKgPerTon} <span className="text-xs font-normal text-slate-400">kg/t</span>
               </span>
               <span className="text-[10px] text-slate-500 block mt-0.5">Low Emission</span>
             </div>
@@ -219,7 +221,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
                 {isAr ? 'الصومعة المستهدفة' : 'Target Silo'}
               </span>
               <span className="text-xs font-bold text-white block truncate">
-                {selectedPassport.targetSiloId.split(' ')[0]}
+                {activePassport.targetSiloId.split(' ')[0]}
               </span>
               <span className="text-[10px] text-slate-500 block mt-0.5">Sovereign Reserve</span>
             </div>
@@ -233,7 +235,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
             </h4>
 
             <div className="relative pl-6 sm:pl-8 border-l border-slate-800 space-y-4">
-              {selectedPassport.traceabilityStages.map((stage, idx) => {
+              {activePassport.traceabilityStages.map((stage, idx) => {
                 const isDone = stage.status === 'VERIFIED';
                 const isCurrent = stage.status === 'CURRENT';
 
@@ -281,15 +283,15 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
             <div className="space-y-1 text-slate-400">
               <p className="truncate">
                 <span className="text-slate-500">SHA-256 Hash: </span>
-                <span className="text-cyan-300 font-bold">{selectedPassport.cryptographicSeal.hash}</span>
+                <span className="text-cyan-300 font-bold">{activePassport.cryptographicSeal.hash}</span>
               </p>
               <p className="truncate">
                 <span className="text-slate-500">Root CA: </span>
-                <span className="text-slate-300">{selectedPassport.cryptographicSeal.issuerSovereignKey}</span>
+                <span className="text-slate-300">{activePassport.cryptographicSeal.issuerSovereignKey}</span>
               </p>
               <p className="truncate">
                 <span className="text-slate-500">Merkle Root: </span>
-                <span className="text-emerald-400">{selectedPassport.cryptographicSeal.merkleRoot}</span>
+                <span className="text-emerald-400">{activePassport.cryptographicSeal.merkleRoot}</span>
               </p>
             </div>
           </div>
@@ -334,7 +336,7 @@ export const QualityPassports: React.FC<QualityPassportsProps> = ({
             </div>
 
             <div className="font-mono text-[11px] text-cyan-400 truncate">
-              {selectedPassport.crop_batch_id}
+              {activePassport.crop_batch_id}
             </div>
 
             <button

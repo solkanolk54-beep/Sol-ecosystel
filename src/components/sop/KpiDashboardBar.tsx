@@ -9,7 +9,8 @@ import {
   Smartphone, 
   Users, 
   TrendingUp,
-  Cpu
+  Cpu,
+  Flame
 } from 'lucide-react';
 import { OperationsKPIs, Language, UserRole } from '../../types/ecosystem';
 
@@ -20,6 +21,7 @@ interface KpiDashboardBarProps {
   onSelectRole: (role: UserRole) => void;
   onOpenSopManual: () => void;
   onOpenMobileSimulator: () => void;
+  onOpenStressTest?: () => void;
 }
 
 export const KpiDashboardBar: React.FC<KpiDashboardBarProps> = ({
@@ -28,7 +30,8 @@ export const KpiDashboardBar: React.FC<KpiDashboardBarProps> = ({
   currentRole,
   onSelectRole,
   onOpenSopManual,
-  onOpenMobileSimulator
+  onOpenMobileSimulator,
+  onOpenStressTest
 }) => {
   const isAr = language === 'ar';
 
@@ -113,6 +116,17 @@ export const KpiDashboardBar: React.FC<KpiDashboardBarProps> = ({
           <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
           <span>{isAr ? 'محاكي تطبيق Kareema' : 'Kareema Mobile'}</span>
         </button>
+
+        {onOpenStressTest && (
+          <button
+            onClick={onOpenStressTest}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-300 border border-rose-500/40 hover:bg-rose-500/25 text-xs font-bold transition-colors cursor-pointer"
+            title="Protocol: EXERCISE-DARK-DROUGHT-2026"
+          >
+            <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            <span>{isAr ? 'اختبار الضغط (Crisis)' : 'Stress Test'}</span>
+          </button>
+        )}
       </div>
     </div>
   );

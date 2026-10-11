@@ -202,3 +202,37 @@ export interface SovereignCloudStatus {
   storageUsageTb: number;
   storageTotalTb: number;
 }
+
+export type StressTestStage = 
+  | 'IDLE'
+  | 'STAGE_0_BASELINE'
+  | 'STAGE_1_MULTI_DROUGHT'
+  | 'STAGE_2_BLACKOUT'
+  | 'STAGE_3_OFFLINE_EXECUTION'
+  | 'STAGE_4_RESTORATION'
+  | 'STAGE_5_SCORECARD';
+
+export interface StressTestScorecardMetric {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  targetMetric: string;
+  actualResult: string;
+  status: 'SUCCESS' | 'WARNING' | 'FAILED';
+  detailsAr: string;
+  detailsEn: string;
+}
+
+export interface EmergencyStressTestState {
+  isActive: boolean;
+  currentStage: StressTestStage;
+  elapsedSeconds: number;
+  networkOnline: boolean;
+  offlineQueueCount: number;
+  totalAlertsDispatched: number;
+  activeP1Count: number;
+  offlineReportsCompleted: number;
+  reconciliationProgress: number; // 0 - 100%
+  scorecard: StressTestScorecardMetric[];
+}
+
