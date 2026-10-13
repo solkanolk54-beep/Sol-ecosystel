@@ -18,13 +18,21 @@ import {
   Sliders,
   CheckCircle2,
   Navigation,
-  Info
+  Info,
+  Crosshair,
+  ShieldAlert,
+  Thermometer,
+  Heart,
+  Dna,
+  X,
+  History
 } from 'lucide-react';
 import { 
   ParcelAsset, 
   FleetUnit, 
   LivestockHerd, 
-  Language 
+  Language,
+  LivestockAlertDeepLink
 } from '../../types/ecosystem';
 import { ParcelDetailModal } from './ParcelDetailModal';
 
@@ -36,6 +44,10 @@ interface GisMapProps {
   onDispatchStressWorkOrder: (parcel: ParcelAsset) => void;
   onDispatchGrazingWorkOrder: (herd: LivestockHerd) => void;
   onViewPassport: (cropBatchId: string) => void;
+  focusedCoordinates?: [number, number] | null;
+  focusedAnimalInfo?: LivestockAlertDeepLink | null;
+  onClearFocus?: () => void;
+  onOpenChronos?: () => void;
 }
 
 export const GisMap: React.FC<GisMapProps> = ({
@@ -45,7 +57,11 @@ export const GisMap: React.FC<GisMapProps> = ({
   language,
   onDispatchStressWorkOrder,
   onDispatchGrazingWorkOrder,
-  onViewPassport
+  onViewPassport,
+  focusedCoordinates,
+  focusedAnimalInfo,
+  onClearFocus,
+  onOpenChronos
 }) => {
   const isAr = language === 'ar';
 
@@ -87,6 +103,20 @@ export const GisMap: React.FC<GisMapProps> = ({
     }, 1800);
     return () => clearInterval(interval);
   }, [isPlayingTimeline, timeSteps.length]);
+
+  // Center on focused coordinates and activate radar ping animation
+  useEffect(() => {
+    if (focusedCoordinates) {
+      setShowHerds(true);
+      const cx = lngToX(focusedCoordinates[1]);
+      const cy = latToY(focusedCoordinates[0]);
+      setZoomLevel(1.8);
+      setPanOffset({
+        x: Math.round(500 - cx),
+        y: Math.round(340 - cy)
+      });
+    }
+  }, [focusedCoordinates]);
 
   // Coordinate mapping bounds
   // Center: [24.155, 47.340]
@@ -210,6 +240,17 @@ export const GisMap: React.FC<GisMapProps> = ({
             <AlertCircle className="w-3 h-3 text-rose-400" />
             <span>{isAr ? 'مناطق الإجهاد (BBOX)' : 'Stress BBOX'}</span>
           </button>
+
+          {onOpenChronos && (
+            <button
+              onClick={onOpenChronos}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded border border-amber-600/70 bg-amber-950/60 hover:bg-amber-900/80 text-amber-300 text-[11px] font-semibold transition-colors cursor-pointer shadow-sm"
+              title="Launch Sol-Chronos Historical Spatial Analytics (1988-2026)"
+            >
+              <History className="w-3.5 h-3.5 text-amber-400" />
+              <span>{isAr ? 'Sol-Chronos (1988-2026)' : 'Sol-Chronos (1988-2026)'}</span>
+            </button>
+          )}
         </div>
 
         {/* Map Projection & Coordinate HUD */}
@@ -512,7 +553,201 @@ export const GisMap: React.FC<GisMapProps> = ({
               </g>
             );
           })}
+
+          {/* Active Radar Ping Animation on Exact Focused Animal Coordinates (Deep Link Target) */}
+          {focusedCoordinates && (() => {
+            const rx = lngToX(focusedCoordinates[1]);
+            const ry = latToY(focusedCoordinates[0]);
+            const isBreach = focusedAnimalInfo?.boundaryStatus === 'BREACH' || focusedAnimalInfo?.boundaryStatus === 'BOUNDARY_WARNING';
+
+            return (
+              <g className="cursor-pointer group">
+                {/* 1. Concentric Sonar Pulse Wave 1 */}
+                <circle 
+                  cx={rx} 
+                  cy={ry} 
+                  r="24" 
+                  fill="none" 
+                  stroke={isBreach ? "#f43f5e" : "#06b6d4"} 
+                  strokeWidth="3" 
+                  className="animate-ping" 
+                  style={{ animationDuration: '1.6s' }}
+                />
+
+                {/* 2. Concentric Sonar Pulse Wave 2 */}
+                <circle 
+                  cx={rx} 
+                  cy={ry} 
+                  r="52" 
+                  fill="none" 
+                  stroke={isBreach ? "#e11d48" : "#38bdf8"} 
+                  strokeWidth="2" 
+                  opacity="0.8" 
+                  className="animate-ping" 
+                  style={{ animationDuration: '2.4s', animationDelay: '0.4s' }}
+                />
+
+                {/* 3. Outer Perimeter Wave */}
+                <circle 
+                  cx={rx} 
+                  cy={ry} 
+                  r="85" 
+                  fill="none" 
+                  stroke={isBreach ? "#f59e0b" : "#10b981"} 
+                  strokeWidth="1.5" 
+                  strokeDasharray="4 3" 
+                  opacity="0.65" 
+                  className="animate-ping" 
+                  style={{ animationDuration: '3.2s', animationDelay: '0.8s' }}
+                />
+
+                {/* 4. Rotating Radar Scanner Sweep Arm */}
+                <g transform={`translate(${rx}, ${ry})`}>
+                  <line 
+                    x1="0" 
+                    y1="0" 
+                    x2="70" 
+                    y2="0" 
+                    stroke={isBreach ? "#f43f5e" : "#38bdf8"} 
+                    strokeWidth="2.5" 
+                    opacity="0.95" 
+                    className="animate-spin origin-center" 
+                    style={{ animationDuration: '3s' }}
+                  />
+                  <circle cx="0" cy="0" r="70" fill={isBreach ? "rgba(244, 63, 94, 0.08)" : "rgba(56, 189, 248, 0.08)"} stroke={isBreach ? "#f43f5e" : "#0284c7"} strokeWidth="1" strokeDasharray="3 3" />
+                  <circle cx="0" cy="0" r="11" fill={isBreach ? "#e11d48" : "#0284c7"} stroke="#ffffff" strokeWidth="2" className="animate-pulse" />
+                </g>
+
+                {/* 5. Precision Crosshair Target Lines */}
+                <line x1={rx - 30} y1={ry} x2={rx + 30} y2={ry} stroke="#ffffff" strokeWidth="1.2" strokeDasharray="2 2" />
+                <line x1={rx} y1={ry - 30} x2={rx} y2={ry + 30} stroke="#ffffff" strokeWidth="1.2" strokeDasharray="2 2" />
+
+                {/* 6. High-Visibility Animal Pin Badge */}
+                <g transform={`translate(${rx}, ${ry - 32})`}>
+                  <rect 
+                    x="-75" 
+                    y="-15" 
+                    width="150" 
+                    height="22" 
+                    rx="4" 
+                    fill="rgba(15, 23, 42, 0.96)" 
+                    stroke={isBreach ? "#f43f5e" : "#06b6d4"} 
+                    strokeWidth="1.8" 
+                    className="shadow-2xl"
+                  />
+                  <text x="0" y="0" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+                    📡 {focusedAnimalInfo?.tagId || 'RFID-TAG'} · {focusedAnimalInfo?.temperatureCelsius ? `${focusedAnimalInfo.temperatureCelsius}°C` : 'PING'}
+                  </text>
+                </g>
+              </g>
+            );
+          })()}
         </svg>
+
+        {/* Floating Animal Telemetry Radar Inspector (UI Deep Link Display) */}
+        {focusedCoordinates && focusedAnimalInfo && (
+          <div className="absolute top-4 left-4 z-30 w-84 max-w-[92vw] bg-slate-900/95 backdrop-blur-md border border-rose-500/80 rounded-xl p-3.5 shadow-2xl text-xs space-y-2.5 animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="p-1 rounded-md bg-rose-500/20 text-rose-400">
+                  <Crosshair className="w-4 h-4 animate-spin" style={{ animationDuration: '4s' }} />
+                </span>
+                <div>
+                  <h4 className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <span>{isAr ? 'رادار تتبع الماشية اللحظي' : 'Live Livestock Radar Ping'}</span>
+                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                  </h4>
+                  <span className="text-[10px] font-mono text-cyan-300">{focusedAnimalInfo.rfidChipId}</span>
+                </div>
+              </div>
+
+              {onClearFocus && (
+                <button 
+                  onClick={onClearFocus}
+                  className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                  title={isAr ? 'إغلاق التتبع' : 'Close Focus'}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            <div className="space-y-1.5 text-slate-300 text-[11px]">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400">{isAr ? 'رقم الشريحة / البقرة:' : 'Tag / Breed:'}</span>
+                <span className="font-bold font-mono text-white">{focusedAnimalInfo.tagId}</span>
+              </div>
+              <div className="text-[10px] text-slate-400 truncate">
+                {focusedAnimalInfo.breed}
+              </div>
+
+              <div className="grid grid-cols-3 gap-1.5 pt-1">
+                <div className="p-1.5 rounded bg-slate-950 border border-slate-800 text-center">
+                  <span className="text-[9px] text-slate-400 block mb-0.5">{isAr ? 'الحرارة' : 'Temp'}</span>
+                  <span className={`font-mono font-bold text-xs ${
+                    focusedAnimalInfo.temperatureCelsius >= 39.4 ? 'text-rose-400' : 'text-emerald-400'
+                  }`}>
+                    {focusedAnimalInfo.temperatureCelsius}°C
+                  </span>
+                </div>
+
+                <div className="p-1.5 rounded bg-slate-950 border border-slate-800 text-center">
+                  <span className="text-[9px] text-slate-400 block mb-0.5">{isAr ? 'النبض' : 'Heart'}</span>
+                  <span className="font-mono font-bold text-xs text-white">
+                    {focusedAnimalInfo.heartRateBpm} BPM
+                  </span>
+                </div>
+
+                <div className="p-1.5 rounded bg-slate-950 border border-slate-800 text-center">
+                  <span className="text-[9px] text-slate-400 block mb-0.5">{isAr ? 'التحمل' : 'HTI'}</span>
+                  <span className="font-mono font-bold text-xs text-teal-300">
+                    {focusedAnimalInfo.heatToleranceScore}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-2 rounded bg-rose-950/40 border border-rose-800/60 mt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-rose-300 font-bold text-[10px] flex items-center gap-1">
+                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <span>{focusedAnimalInfo.boundaryStatus}</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    [{focusedAnimalInfo.coordinates[0].toFixed(4)}N, {focusedAnimalInfo.coordinates[1].toFixed(4)}E]
+                  </span>
+                </div>
+                {focusedAnimalInfo.alertReason && (
+                  <p className="text-[10px] text-rose-200/90 mt-1">
+                    {focusedAnimalInfo.alertReason}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                onClick={() => {
+                  const targetHerd = herds.find(h => h.rfid_batch_prefix && focusedAnimalInfo.rfidChipId.includes(h.rfid_batch_prefix.slice(0, 10))) || herds[1];
+                  onDispatchGrazingWorkOrder(targetHerd);
+                  if (onClearFocus) onClearFocus();
+                }}
+                className="flex-1 py-1.5 px-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-md"
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
+                <span>{isAr ? 'إرسال فرقة Kareema البيطرية' : 'Dispatch Kareema Ranger'}</span>
+              </button>
+
+              {onClearFocus && (
+                <button
+                  onClick={onClearFocus}
+                  className="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors cursor-pointer"
+                >
+                  {isAr ? 'إلغاء' : 'Dismiss'}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Map Floating Tools (Zoom & Reset) */}
         <div className="absolute bottom-16 right-4 flex flex-col gap-1.5 z-20">

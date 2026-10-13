@@ -231,6 +231,94 @@ class SolEcosystemEventBus {
       }
     });
   }
+  /**
+   * Sovereign Bus Integration: Livestock & Genetic RFID Telemetry Streamer
+   * Streams animal vitals, HTI, and boundary status to `sol.telemetry.livestock.v3`.
+   * Automatically triggers a Kareema operational alert/work order when a boundary breach
+   * or critical body temperature spike occurs.
+   */
+  public triggerLivestockTelemetryEvent(data: {
+    tagId: string;
+    rfidChipId: string;
+    breed: string;
+    temperatureCelsius: number;
+    heartRateBpm: number;
+    heatToleranceScore: number;
+    coordinates: [number, number];
+    boundaryStatus: 'NOMINAL' | 'BOUNDARY_WARNING' | 'BREACH';
+    locationName: string;
+  }): {
+    telemetryEvent: SystemEvent;
+    dispatchWorkOrder?: WorkOrder;
+  } {
+    const isCriticalTemp = data.temperatureCelsius >= 39.4;
+    const isBoundaryBreach = data.boundaryStatus !== 'NOMINAL';
+    const isAlertCondition = isCriticalTemp || isBoundaryBreach;
+
+    const telemetryEvent = this.publish({
+      topic: 'sol.telemetry.livestock.v3',
+      eventType: isBoundaryBreach ? 'EVENT_LIVESTOCK_BOUNDARY_BREACH' : 'EVENT_LIVESTOCK_TELEMETRY_PACKET',
+      sourceSystem: 'Kareema',
+      payload: {
+        tag_id: data.tagId,
+        rfid_chip_id: data.rfidChipId,
+        breed: data.breed,
+        temperature_c: data.temperatureCelsius,
+        heart_rate_bpm: data.heartRateBpm,
+        heat_tolerance_score: data.heatToleranceScore,
+        coordinates: data.coordinates,
+        boundary_status: data.boundaryStatus,
+        location: data.locationName,
+        alert_triggered: isAlertCondition,
+        alert_reason: isCriticalTemp 
+          ? `CRITICAL_HYPERTHERMIA_SPIKE (${data.temperatureCelsius}°C)` 
+          : isBoundaryBreach ? `GEOPERIMETER_BOUNDARY_WARNING (${data.boundaryStatus})` : 'NORMAL_STREAM'
+      }
+    });
+
+    let dispatchWorkOrder: WorkOrder | undefined;
+
+    if (isAlertCondition) {
+      dispatchWorkOrder = {
+        order_id: `WO-LIVESTOCK-${Math.floor(1000 + Math.random() * 9000)}`,
+        trigger_event_id: telemetryEvent.event_id,
+        asset_id: data.rfidChipId,
+        assetName: `البقرة المستوردة ${data.tagId} (${data.breed})`,
+        title: isBoundaryBreach 
+          ? `إنذار اختراق سياج المرعى: ${data.tagId}` 
+          : `طوارئ إجهاد حراري حاد للبقرة: ${data.tagId} (${data.temperatureCelsius}°C)`,
+        titleEn: isBoundaryBreach
+          ? `Boundary Warning & Perimeter Breach: ${data.tagId}`
+          : `Critical Hyperthermia Alert: ${data.tagId} (${data.temperatureCelsius}°C)`,
+        description: isBoundaryBreach
+          ? `تم رصد خروج البقرة ${data.tagId} عن سياج المرعى الجغرافي المحدد في ${data.locationName}. مطلوب تدخل فوري لإعادة الحيوان إلى الممر الآمن.`
+          : `ارتفعت حرارة جسم البقرة ${data.tagId} إلى ${data.temperatureCelsius}°C وتجاوز معدل النبض ${data.heartRateBpm} BPM. مطلوب تفعيل الرذاذ التبخيري والفحص البيطري الفوري.`,
+        descriptionEn: isBoundaryBreach
+          ? `RFID tag ${data.tagId} crossed geofenced sanctuary perimeter in ${data.locationName}. Rapid response required to herd back to safety corridor.`
+          : `Body temperature spiked to ${data.temperatureCelsius}°C with heart rate at ${data.heartRateBpm} BPM. Immediate misting and veterinary inspection dispatched.`,
+        severity: 'CRITICAL',
+        status: 'PENDING',
+        assignedTechnician: 'د. كريم بن زاهي (الفريق البيطري السريع - Kareema)',
+        coordinates: data.coordinates,
+        bbox: {
+          minLat: data.coordinates[0] - 0.003,
+          minLng: data.coordinates[1] - 0.003,
+          maxLat: data.coordinates[0] + 0.003,
+          maxLng: data.coordinates[1] + 0.003
+        },
+        createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
+        etaMinutes: 12,
+        solutionType: isBoundaryBreach ? 'HERD_REDIVERSION' : 'SOIL_SAMPLING',
+        slaLevel: 'P1_CRITICAL',
+        slaMaxMinutes: 15,
+        slaRemainingMinutes: 10
+      };
+
+      this.workOrderListeners.forEach(fn => fn(dispatchWorkOrder!));
+    }
+
+    return { telemetryEvent, dispatchWorkOrder };
+  }
 }
 
 export const eventBus = new SolEcosystemEventBus();

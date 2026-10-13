@@ -19,6 +19,7 @@ export type EventTopic =
   | 'kareema.fleet-gps.v1'
   | 'kareema.livestock-rfid.v1'
   | 'kareema.grazing-warning.v1'
+  | 'sol.telemetry.livestock.v3'
   | 'atlas.passport-sealed.v1';
 
 export interface BoundingBox {
@@ -108,6 +109,15 @@ export interface LivestockHerd {
   recommendedRotationZone: string;
   recommendedRotationZoneEn: string;
   rfidSampleTags: string[];
+  averageHti?: number;
+  boundaryWarning?: boolean;
+  activeBioTelemetry?: {
+    avgTemperatureC: number;
+    avgHeartRateBpm: number;
+    avgHti: number; // Heat Tolerance Index
+    boundaryBreachActive: boolean;
+    lastTelemetryPingUtc: string;
+  };
 }
 
 export interface SystemEvent {
@@ -118,6 +128,8 @@ export interface SystemEvent {
     | 'EVENT_WORK_ORDER_DISPATCHED'
     | 'EVENT_FLEET_ROUTE_DEVIATION'
     | 'EVENT_HERD_GRAZING_ANOMALY'
+    | 'EVENT_LIVESTOCK_TELEMETRY_PACKET'
+    | 'EVENT_LIVESTOCK_BOUNDARY_BREACH'
     | 'EVENT_QUALITY_PASSPORT_SEALED'
     | 'EVENT_SOVEREIGN_NODE_SYNC';
   sourceSystem: 'SolVision' | 'Kareema' | 'AtlasCloud';
@@ -164,6 +176,10 @@ export interface OperationsKPIs {
   openP1Count: number;
   openP2Count: number;
   offlineQueuePending: number;
+  activeHerdCount?: number;
+  averageHTI?: number;
+  boundaryWarningCount?: number;
+  criticalTempSpikeCount?: number;
 }
 
 export interface DigitalQualityPassport {
@@ -513,5 +529,35 @@ export interface AirliftMission {
   lastTelemetryPingSec: number;
 }
 
+export interface LivestockTelemetryPacket {
+  tagId: string;
+  rfidChipId: string;
+  breed: string;
+  herdId: string;
+  animalType: 'CAMEL' | 'SHEEP' | 'CATTLE';
+  temperatureCelsius: number;
+  heartRateBpm: number;
+  heatToleranceScore: number; // HTI %
+  coordinates: [number, number]; // [lat, lng]
+  boundaryStatus: 'NOMINAL' | 'BOUNDARY_WARNING' | 'BREACH';
+  locationName: string;
+  locationNameEn: string;
+  timestamp: string;
+  alertTriggered: boolean;
+  alertReason?: string;
+  pastureZone: string;
+}
 
-
+export interface LivestockAlertDeepLink {
+  tagId: string;
+  rfidChipId: string;
+  breed: string;
+  temperatureCelsius: number;
+  heartRateBpm: number;
+  heatToleranceScore: number;
+  coordinates: [number, number];
+  boundaryStatus: 'NOMINAL' | 'BOUNDARY_WARNING' | 'BREACH';
+  locationName: string;
+  alertReason?: string;
+  orderId?: string;
+}

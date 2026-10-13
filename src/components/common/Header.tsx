@@ -18,15 +18,16 @@ import {
   Pin,
   PinOff,
   Wheat,
-  Plane
+  Plane,
+  History
 } from 'lucide-react';
 import { Language, SovereignCloudStatus, UserRole } from '../../types/ecosystem';
 
 interface HeaderProps {
   language: Language;
   setLanguage: (lang: Language) => void;
-  activeTab: 'gis' | 'agrigis' | 'airlift' | 'passports' | 'sovereign' | 'api';
-  setActiveTab: (tab: 'gis' | 'agrigis' | 'airlift' | 'passports' | 'sovereign' | 'api') => void;
+  activeTab: 'gis' | 'agrigis' | 'airlift' | 'chronos' | 'passports' | 'sovereign' | 'api';
+  setActiveTab: (tab: 'gis' | 'agrigis' | 'airlift' | 'chronos' | 'passports' | 'sovereign' | 'api') => void;
   cloudStatus: SovereignCloudStatus;
   currentRole?: UserRole;
   onSimulateStress: () => void;
@@ -218,6 +219,21 @@ export const Header: React.FC<HeaderProps> = ({
             <span>{isAr ? 'الجسر الجوي US-DZ (أبقار تكساس)' : 'US-DZ Airlift Trace'}</span>
             <span className="text-[10px] font-mono px-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
               ONLINE
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('chronos')}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap ${
+              activeTab === 'chronos'
+                ? 'bg-gradient-to-r from-amber-600 via-emerald-600 to-teal-600 text-white shadow-sm border border-emerald-400/50'
+                : 'text-amber-400/90 hover:text-amber-300 hover:bg-slate-800/80'
+            }`}
+          >
+            <History className="w-3.5 h-3.5 text-amber-400" />
+            <span>{isAr ? 'منظومة Sol-Chronos (1988-2026)' : 'Sol-Chronos (1988-2026)'}</span>
+            <span className="text-[10px] font-mono px-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              38Y
             </span>
           </button>
 

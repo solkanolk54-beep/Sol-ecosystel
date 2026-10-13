@@ -28,7 +28,12 @@ import {
   ChevronRight,
   Database,
   Building2,
-  Share2
+  Share2,
+  Globe,
+  Navigation,
+  ZoomIn,
+  ZoomOut,
+  Maximize2
 } from 'lucide-react';
 import { 
   AirliftMission, 
@@ -403,13 +408,229 @@ export const UsDzAirliftTraceHub: React.FC<UsDzAirliftTraceHubProps> = ({
               </div>
             </div>
 
-            {/* Flight Path Visualizer Progress */}
-            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4">
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+            {/* Interactive Transatlantic Airlift Radar Map (USA ➔ Atlantic Ocean ➔ Algeria) */}
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-indigo-400" />
+                  <span className="text-xs font-bold text-white">
+                    {isAr ? 'خريطة الرادار الجوي الحي عبر المحيط الأطلسي (Live Transatlantic Radar)' : 'Live Transatlantic Airlift Flight Radar'}
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-mono">
+                    ADS-B Satellite Feed
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>{isAr ? 'تحديث حي' : 'LIVE FEED'}</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Geographic SVG Radar Display */}
+              <div className="relative w-full h-64 sm:h-72 rounded-lg bg-[#070d18] border border-slate-800/90 overflow-hidden shadow-inner flex items-center justify-center">
+                <svg
+                  viewBox="0 0 1000 480"
+                  className="w-full h-full object-cover select-none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <defs>
+                    {/* Ocean Radial Gradient */}
+                    <radialGradient id="oceanGrad" cx="50%" cy="50%" r="70%">
+                      <stop offset="0%" stopColor="#0b172a" />
+                      <stop offset="100%" stopColor="#050b14" />
+                    </radialGradient>
+
+                    {/* Flight Path Gradient */}
+                    <linearGradient id="flightPathGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#6366f1" />
+                      <stop offset="50%" stopColor="#06b6d4" />
+                      <stop offset="100%" stopColor="#10b981" />
+                    </linearGradient>
+
+                    {/* Radar Sweep Effect */}
+                    <filter id="radarGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="3" result="blur" />
+                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                  </defs>
+
+                  {/* Ocean Base */}
+                  <rect width="1000" height="480" fill="url(#oceanGrad)" />
+
+                  {/* Latitude / Longitude Graticule Lines */}
+                  {[80, 160, 240, 320, 400].map(y => (
+                    <line key={`lat-${y}`} x1="0" y1={y} x2="1000" y2={y} stroke="#1e293b" strokeWidth="0.5" strokeDasharray="3 4" opacity="0.4" />
+                  ))}
+                  {[150, 300, 450, 600, 750, 900].map(x => (
+                    <line key={`lng-${x}`} x1={x} y1="0" x2={x} y2="480" stroke="#1e293b" strokeWidth="0.5" strokeDasharray="3 4" opacity="0.4" />
+                  ))}
+
+                  {/* Watermark Label: ATLANTIC OCEAN */}
+                  <text x="490" y="240" fill="#1e293b" fontSize="16" fontFamily="monospace" fontWeight="bold" letterSpacing="6" textAnchor="middle">
+                    NORTH ATLANTIC OCEAN • المحيط الأطلسي
+                  </text>
+
+                  {/* North American Coastline / USA Landmass (Simplified Cartographic Polygons) */}
+                  <path
+                    d="M 30 60 L 90 50 L 170 80 L 230 110 L 260 170 L 250 220 L 210 260 L 190 310 L 160 340 L 110 320 L 70 340 L 30 300 Z"
+                    fill="#0f2137"
+                    stroke="#1e3a5f"
+                    strokeWidth="1.2"
+                  />
+                  <text x="130" y="210" fill="#475569" fontSize="12" fontFamily="monospace" fontWeight="bold">
+                    UNITED STATES (USA)
+                  </text>
+                  <text x="130" y="228" fill="#334155" fontSize="10" fontFamily="sans-serif">
+                    Texas / Arizona / New Mexico
+                  </text>
+
+                  {/* European Coastline Outline */}
+                  <path
+                    d="M 680 70 L 760 60 L 800 110 L 770 170 L 720 180 L 680 210 L 640 190 L 660 140 Z"
+                    fill="#0e1f33"
+                    stroke="#1e3a5f"
+                    strokeWidth="1"
+                  />
+                  <text x="710" y="130" fill="#334155" fontSize="10" fontFamily="monospace">
+                    EUROPE
+                  </text>
+
+                  {/* North Africa / ALGERIA Landmass (Prominent Cartographic Territory) */}
+                  <path
+                    d="M 640 230 L 720 220 L 790 230 L 840 260 L 850 340 L 800 440 L 720 450 L 660 390 L 630 310 Z"
+                    fill="#0a2a22"
+                    stroke="#10b981"
+                    strokeWidth="1.5"
+                  />
+                  <text x="740" y="320" fill="#34d399" fontSize="14" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                    الجزائر • ALGERIA
+                  </text>
+                  <text x="740" y="338" fill="#059669" fontSize="10" fontFamily="monospace" textAnchor="middle">
+                    National Sovereign Territory
+                  </text>
+
+                  {/* Waypoint: Amarillo / Texas Airport (Origin) */}
+                  <g transform="translate(180, 240)">
+                    <circle r="8" fill="#6366f1" opacity="0.3" className="animate-ping" />
+                    <circle r="5" fill="#6366f1" stroke="#ffffff" strokeWidth="1.5" />
+                    <text x="-12" y="-12" fill="#c7d2fe" fontSize="10" fontFamily="monospace" fontWeight="bold">
+                      {selectedMission.telemetry.originIcao} (Texas / USA)
+                    </text>
+                    <text x="-12" y="20" fill="#94a3b8" fontSize="9" fontFamily="sans-serif">
+                      Panhandle Elite Genetics
+                    </text>
+                  </g>
+
+                  {/* Mid-Atlantic Oceanic Waypoints */}
+                  <g transform="translate(360, 190)">
+                    <circle r="3" fill="#38bdf8" opacity="0.8" />
+                    <text x="0" y="-8" fill="#64748b" fontSize="8" fontFamily="monospace" textAnchor="middle">WP-ATL-01 (Bermuda Corridor)</text>
+                  </g>
+                  <g transform="translate(520, 180)">
+                    <circle r="3" fill="#38bdf8" opacity="0.8" />
+                    <text x="0" y="-8" fill="#64748b" fontSize="8" fontFamily="monospace" textAnchor="middle">WP-AZORES-ENTRY</text>
+                  </g>
+                  <g transform="translate(640, 225)">
+                    <circle r="3" fill="#38bdf8" opacity="0.8" />
+                    <text x="0" y="-8" fill="#64748b" fontSize="8" fontFamily="monospace" textAnchor="middle">WP-GIBRALTAR-DZ</text>
+                  </g>
+
+                  {/* Waypoint: Algerian Destination Airport */}
+                  <g transform="translate(740, 370)">
+                    <circle r="9" fill="#10b981" opacity="0.3" className="animate-ping" />
+                    <circle r="6" fill="#10b981" stroke="#ffffff" strokeWidth="1.5" />
+                    <text x="14" y="-2" fill="#6ee7b7" fontSize="11" fontFamily="monospace" fontWeight="bold">
+                      {selectedMission.telemetry.destIcao} ({isAr ? selectedMission.telemetry.destNameAr : selectedMission.telemetry.destNameEn})
+                    </text>
+                    <text x="14" y="14" fill="#a7f3d0" fontSize="9" fontFamily="sans-serif">
+                      الحجر البيطري السيادي (Quarantine Station)
+                    </text>
+                  </g>
+
+                  {/* Secondary Algerian Receiving Airports */}
+                  <g transform="translate(730, 260)">
+                    <circle r="3.5" fill="#047857" stroke="#34d399" strokeWidth="1" />
+                    <text x="8" y="4" fill="#94a3b8" fontSize="8" fontFamily="monospace">DAAG (الجزائر العاصمة)</text>
+                  </g>
+                  <g transform="translate(775, 290)">
+                    <circle r="3.5" fill="#047857" stroke="#34d399" strokeWidth="1" />
+                    <text x="8" y="4" fill="#94a3b8" fontSize="8" fontFamily="monospace">DAUB (بسكرة)</text>
+                  </g>
+                  <g transform="translate(690, 420)">
+                    <circle r="3.5" fill="#047857" stroke="#34d399" strokeWidth="1" />
+                    <text x="8" y="4" fill="#94a3b8" fontSize="8" fontFamily="monospace">DAUA (أدرار)</text>
+                  </g>
+
+                  {/* Great Circle Flight Route (Bezier Curve: Texas ➔ Azores ➔ Algeria) */}
+                  <path
+                    d="M 180 240 Q 420 120 740 370"
+                    fill="none"
+                    stroke="url(#flightPathGrad)"
+                    strokeWidth="3.5"
+                    strokeDasharray="6 4"
+                    filter="url(#radarGlow)"
+                  />
+
+                  {/* Real-Time Aircraft Position on Path */}
+                  {(() => {
+                    // Compute plane coordinates along route based on routeProgressPercent (0 to 100)
+                    const p = Math.max(0.05, Math.min(0.95, selectedMission.telemetry.routeProgressPercent / 100));
+                    // Quadratic Bezier interpolation: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
+                    // P0 = (180, 240), P1 = (420, 120), P2 = (740, 370)
+                    const planeX = (1 - p) * (1 - p) * 180 + 2 * (1 - p) * p * 420 + p * p * 740;
+                    const planeY = (1 - p) * (1 - p) * 240 + 2 * (1 - p) * p * 120 + p * p * 370;
+
+                    return (
+                      <g transform={`translate(${planeX}, ${planeY})`}>
+                        {/* Radar Ping Ripple */}
+                        <circle r="16" fill="#38bdf8" opacity="0.2" className="animate-ping" />
+                        <circle r="10" fill="#4338ca" stroke="#38bdf8" strokeWidth="2" />
+                        {/* Airplane Icon */}
+                        <path
+                          d="M -5 -3 L 0 -8 L 5 -3 L 8 0 L 2 2 L 1 7 L -1 7 L -2 2 L -8 0 Z"
+                          fill="#ffffff"
+                          transform="rotate(35)"
+                        />
+                        {/* Callsign Tag */}
+                        <rect x="14" y="-18" width="105" height="30" rx="4" fill="#0f172a" stroke="#6366f1" strokeWidth="1" opacity="0.95" />
+                        <text x="20" y="-6" fill="#38bdf8" fontSize="10" fontFamily="monospace" fontWeight="bold">
+                          ✈ {selectedMission.telemetry.callsign}
+                        </text>
+                        <text x="20" y="7" fill="#e2e8f0" fontSize="8" fontFamily="monospace">
+                          FL{Math.round(selectedMission.telemetry.altitudeFeet / 100)} • {selectedMission.telemetry.groundSpeedKnots}kt
+                        </text>
+                      </g>
+                    );
+                  })()}
+                </svg>
+
+                {/* Radar Floating Overlay Info */}
+                <div className="absolute bottom-2 left-2 px-2.5 py-1.5 rounded-lg bg-slate-900/90 border border-slate-700/80 text-[10px] font-mono text-slate-300 backdrop-blur-sm flex items-center gap-3">
+                  <div>
+                    <span className="text-slate-500">{isAr ? 'المسار: ' : 'Route: '}</span>
+                    <span className="text-indigo-300 font-bold">{selectedMission.telemetry.originIcao} ➔ {selectedMission.telemetry.destIcao}</span>
+                  </div>
+                  <span>·</span>
+                  <div>
+                    <span className="text-slate-500">{isAr ? 'حمولة الأبقار: ' : 'Cargo: '}</span>
+                    <span className="text-emerald-400 font-bold">{selectedMission.cargo.headCount} {isAr ? 'رأس' : 'Heads'}</span>
+                  </div>
+                </div>
+
+                <div className="absolute top-2 right-2 px-2 py-1 rounded bg-slate-900/90 border border-slate-700/80 text-[10px] font-mono text-cyan-300 backdrop-blur-sm">
+                  {isAr ? 'إحداثيات GPS: ' : 'GPS: '}
+                  {selectedMission.telemetry.currentCoordinates[0].toFixed(2)}°N, {Math.abs(selectedMission.telemetry.currentCoordinates[1]).toFixed(2)}°W
+                </div>
+              </div>
+
+              {/* Waypoints & Progress Status Bar */}
+              <div className="flex items-center justify-between text-xs text-slate-400">
                 <span className="flex items-center gap-1 font-mono text-indigo-300">
                   <MapPin className="w-3.5 h-3.5" /> {selectedMission.telemetry.originIcao} ({selectedMission.cargo.originState})
                 </span>
-                <span className="font-mono text-white font-bold">
+                <span className="font-mono text-white font-bold bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
                   {selectedMission.telemetry.routeProgressPercent}% {isAr ? 'مكتمل' : 'Completed'}
                 </span>
                 <span className="flex items-center gap-1 font-mono text-emerald-300">
@@ -417,21 +638,15 @@ export const UsDzAirliftTraceHub: React.FC<UsDzAirliftTraceHubProps> = ({
                 </span>
               </div>
 
-              {/* Progress Bar with Airplane Icon */}
-              <div className="relative w-full h-3 bg-slate-900 rounded-full overflow-visible border border-slate-700">
+              {/* Flight Progress Bar */}
+              <div className="relative w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
                 <div 
                   className="h-full bg-gradient-to-r from-indigo-500 via-teal-500 to-emerald-400 rounded-full transition-all duration-700"
                   style={{ width: `${selectedMission.telemetry.routeProgressPercent}%` }}
                 ></div>
-                <div 
-                  className="absolute top-1/2 -translate-y-1/2 -ml-2 text-white bg-indigo-600 rounded-full p-1 border border-white shadow-lg transition-all duration-700"
-                  style={{ left: `${Math.min(98, Math.max(2, selectedMission.telemetry.routeProgressPercent))}%` }}
-                >
-                  <Plane className="w-3 h-3 transform rotate-45" />
-                </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-3 border-t border-slate-850 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-slate-850 text-xs">
                 <div>
                   <span className="text-slate-500 block text-[10px]">{isAr ? 'الارتفاع الحالي' : 'Altitude'}</span>
                   <span className="font-mono text-slate-200 font-bold">{selectedMission.telemetry.altitudeFeet.toLocaleString()} FT</span>

@@ -24,7 +24,10 @@ import {
   Archive,
   ArchiveRestore,
   Inbox,
-  Search
+  Search,
+  Crosshair,
+  Dna,
+  Thermometer
 } from 'lucide-react';
 import { 
   SystemEvent, 
@@ -33,7 +36,8 @@ import {
   ParcelAsset, 
   LivestockHerd,
   UserRole,
-  AutomatedEmailAlert
+  AutomatedEmailAlert,
+  LivestockAlertDeepLink
 } from '../../types/ecosystem';
 
 interface OperationsCenterProps {
@@ -53,6 +57,7 @@ interface OperationsCenterProps {
   emailAlerts?: AutomatedEmailAlert[];
   onOpenEmailModal?: () => void;
   onOpenEmailModalWithOrder?: (orderId: string) => void;
+  onFocusAnimalOnMap?: (target: LivestockAlertDeepLink) => void;
 }
 
 export const OperationsCenter: React.FC<OperationsCenterProps> = ({
@@ -71,7 +76,8 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
   onOpenMobileSimulatorWithOrder,
   emailAlerts = [],
   onOpenEmailModal,
-  onOpenEmailModalWithOrder
+  onOpenEmailModalWithOrder,
+  onFocusAnimalOnMap
 }) => {
   const isAr = language === 'ar';
   const [activeTab, setActiveTab] = useState<'alerts' | 'workOrders' | 'eventBus' | 'emails'>('alerts');
@@ -395,6 +401,63 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
                 </button>
               </div>
             </div>
+
+            {/* Alert 4: Kareema Operational Livestock & Genetic Alert (Bridged from sol.telemetry.livestock.v3) */}
+            <div className="p-3.5 rounded-lg bg-gradient-to-r from-rose-950/40 via-slate-900 to-slate-950 border border-rose-800/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-rose-900/60 border border-rose-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <Radio className="w-4 h-4 text-rose-300 animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-bold text-rose-200">
+                      {isAr ? 'إنذار Kareema: اختراق سياج المرعى وطوارئ بيطرية' : 'Kareema Alert: Livestock Boundary Warning & Vitals Spike'}
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-rose-900/80 text-rose-300 border border-rose-700 font-bold">
+                      P1 CRITICAL
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 border border-emerald-800 text-emerald-400 font-bold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                      <span>sol.telemetry.livestock.v3</span>
+                    </span>
+                  </div>
+                  <p className="text-xs text-rose-300/80 mt-1">
+                    {isAr
+                      ? `رصد خروج الشريحة RFID-DZ-SHP-44210-14 (سلالة أولاد جلال) عن السياج الجغرافي نحو تلال المرعى الشرقية B2 مع حرارة 39.7°C.`
+                      : `RFID tag RFID-DZ-SHP-44210-14 breached geofenced sanctuary perimeter near Sector B2 with body temp spiking to 39.7°C.`}
+                  </p>
+                  <div className="text-[11px] font-mono text-slate-400 mt-1 flex items-center gap-2">
+                    <span>GPS: [24.1712° N, 47.3630° E]</span>
+                    <span>·</span>
+                    <span className="text-cyan-400 font-mono">Kareema IoT Bus</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="shrink-0">
+                {onFocusAnimalOnMap && (
+                  <button
+                    onClick={() => onFocusAnimalOnMap({
+                      tagId: 'DZ-SHP-44210-14',
+                      rfidChipId: 'RFID-DZ-SHP-44210-14',
+                      breed: 'نعاج أولاد جلال المحسنة (Ouled Djellal)',
+                      temperatureCelsius: 39.7,
+                      heartRateBpm: 88,
+                      heatToleranceScore: 88.5,
+                      coordinates: [24.1712, 47.3630],
+                      boundaryStatus: 'BREACH',
+                      locationName: 'تلال المرعى الشرقية (القطاع B2)',
+                      alertReason: 'خروج عن السياج الجغرافي الآمن وارتفاع حرارة الجسم'
+                    })}
+                    className="w-full sm:w-auto px-3.5 py-2 rounded-md bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    title="Deep link directly into GIS Map with active radar ping animation"
+                  >
+                    <Crosshair className="w-3.5 h-3.5 text-white animate-spin" style={{ animationDuration: '3s' }} />
+                    <span>{isAr ? 'رصد الرادار على الخريطة' : 'Map Radar Ping'}</span>
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
@@ -664,7 +727,29 @@ export const OperationsCenter: React.FC<OperationsCenterProps> = ({
                               </button>
                             </div>
                           ) : (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {order.coordinates && onFocusAnimalOnMap && (
+                                <button
+                                  onClick={() => onFocusAnimalOnMap({
+                                    tagId: order.assetName,
+                                    rfidChipId: order.asset_id,
+                                    breed: order.title,
+                                    temperatureCelsius: 39.5,
+                                    heartRateBpm: 84,
+                                    heatToleranceScore: 89,
+                                    coordinates: order.coordinates,
+                                    boundaryStatus: 'BREACH',
+                                    locationName: order.assetName,
+                                    alertReason: order.description,
+                                    orderId: order.order_id
+                                  })}
+                                  className="px-2.5 py-1 rounded bg-indigo-950/70 hover:bg-indigo-900 text-indigo-300 text-xs font-medium border border-indigo-700/60 transition-colors flex items-center gap-1 cursor-pointer shadow-sm"
+                                  title={isAr ? 'تركيز الخريطة على موقع أمر العمل ورصد الرادار' : 'Focus map & radar ping on coordinates'}
+                                >
+                                  <Crosshair className="w-3.5 h-3.5 text-cyan-300" />
+                                  <span>{isAr ? 'تتبع الموقع (Radar)' : 'Map Radar'}</span>
+                                </button>
+                              )}
                               {onOpenMobileSimulatorWithOrder && (
                                 <button
                                   onClick={() => onOpenMobileSimulatorWithOrder(order)}

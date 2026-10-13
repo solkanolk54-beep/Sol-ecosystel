@@ -11,7 +11,8 @@ import {
   UserRole, 
   OperationsKPIs, 
   StressTestStage,
-  AutomatedEmailAlert
+  AutomatedEmailAlert,
+  LivestockAlertDeepLink
 } from './types/ecosystem';
 import { 
   INITIAL_PARCELS, 
@@ -30,6 +31,7 @@ import { Header } from './components/common/Header';
 import { GisMap } from './components/gis/GisMap';
 import { OperationsCenter } from './components/operations/OperationsCenter';
 import { EmailNotificationModal } from './components/operations/EmailNotificationModal';
+import { LivestockTelemetryHudCard } from './components/operations/LivestockTelemetryHudCard';
 import { QualityPassports } from './components/governance/QualityPassports';
 import { SovereignCloudPanel } from './components/governance/SovereignCloudPanel';
 import { OpenApiDocs } from './components/api/OpenApiDocs';
@@ -39,6 +41,8 @@ import { KpiDashboardBar } from './components/sop/KpiDashboardBar';
 import { StressTestModal } from './components/stressTest/StressTestModal';
 import { AgriGisAlgerieHub } from './components/agrigis/AgriGisAlgerieHub';
 import { UsDzAirliftTraceHub } from './components/operations/UsDzAirliftTraceHub';
+import { SolChronosHub } from './components/chronos/SolChronosHub';
+import { SolChronosBaselineCard } from './components/chronos/SolChronosBaselineCard';
 import { 
   Satellite, 
   Radio, 
@@ -54,12 +58,13 @@ import {
   WifiOff,
   Zap,
   HardDrive,
-  Plane
+  Plane,
+  History as HistoryIcon
 } from 'lucide-react';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('ar');
-  const [activeTab, setActiveTab] = useState<'gis' | 'agrigis' | 'airlift' | 'passports' | 'sovereign' | 'api'>('gis');
+  const [activeTab, setActiveTab] = useState<'gis' | 'agrigis' | 'airlift' | 'chronos' | 'passports' | 'sovereign' | 'api'>('gis');
 
   // SOP Role state (Section 2 of SOP)
   const [currentRole, setCurrentRole] = useState<UserRole>('ALL');
@@ -92,6 +97,9 @@ export default function App() {
     time: string;
     orderId: string;
   } | null>(null);
+
+  // Targeted Livestock Deep Link State (for spatial radar ping and focus)
+  const [focusedAnimalTarget, setFocusedAnimalTarget] = useState<LivestockAlertDeepLink | null>(null);
 
   // Subscribe to Event Bus and Notification Service for live state synchronization
   useEffect(() => {
@@ -507,6 +515,16 @@ export default function App() {
     setTargetBatchForPassportModal(cropBatchId);
   };
 
+  // UI Deep Linking Handler: Focus spatial map on exact animal's coordinates with radar ping
+  const handleFocusLivestockOnMap = (target: LivestockAlertDeepLink) => {
+    setActiveTab('gis');
+    setFocusedAnimalTarget(target);
+  };
+
+  const handleClearLivestockFocus = () => {
+    setFocusedAnimalTarget(null);
+  };
+
   const isAr = language === 'ar';
   const isBlackoutActive = stressTestStage === 'STAGE_2_BLACKOUT' || stressTestStage === 'STAGE_3_OFFLINE_EXECUTION';
 
@@ -611,7 +629,19 @@ export default function App() {
 
         {/* VIEW 1: GIS Center Stage & Operations Center (The Main Console) */}
         {activeTab === 'gis' && (
-          <div className="space-y-6">
+          <div className="space-y-4">
+            {/* Live Sovereign HUD Extension: Livestock & Genetic Health Card */}
+            <LivestockTelemetryHudCard
+              language={language}
+              onFocusAnimalOnMap={handleFocusLivestockOnMap}
+            />
+
+            {/* Dedicated Central Dashboard Control Card: Sol-Chronos Historical Baseline */}
+            <SolChronosBaselineCard
+              language={language}
+              onLaunchChronos={() => setActiveTab('chronos')}
+            />
+
             {/* Top Operational Split Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
               {/* Component [1]: GIS Interactive Map (Takes 7 of 12 cols on desktop) */}
@@ -644,6 +674,14 @@ export default function App() {
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                     </button>
 
+                    <button
+                      onClick={() => setActiveTab('chronos')}
+                      className="px-2.5 py-1 rounded bg-amber-950/80 hover:bg-amber-900 border border-amber-500/50 text-amber-300 font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:border-amber-400"
+                    >
+                      <HistoryIcon className="w-3.5 h-3.5 text-amber-400" />
+                      <span>{isAr ? 'منظومة Sol-Chronos ⏳' : 'Sol-Chronos ⏳'}</span>
+                    </button>
+
                     {isBlackoutActive ? (
                       <span className="font-mono text-[11px] text-amber-400 flex items-center gap-1">
                         <HardDrive className="w-3 h-3" />
@@ -663,6 +701,10 @@ export default function App() {
                   onDispatchStressWorkOrder={handleDispatchStressWorkOrder}
                   onDispatchGrazingWorkOrder={handleDispatchGrazingWorkOrder}
                   onViewPassport={handleViewPassport}
+                  focusedCoordinates={focusedAnimalTarget ? focusedAnimalTarget.coordinates : null}
+                  focusedAnimalInfo={focusedAnimalTarget}
+                  onClearFocus={handleClearLivestockFocus}
+                  onOpenChronos={() => setActiveTab('chronos')}
                 />
               </div>
 
@@ -695,6 +737,7 @@ export default function App() {
                   emailAlerts={emailAlerts}
                   onOpenEmailModal={() => setIsEmailModalOpen(true)}
                   onOpenEmailModalWithOrder={handleOpenEmailModalWithOrder}
+                  onFocusAnimalOnMap={handleFocusLivestockOnMap}
                 />
               </div>
             </div>
@@ -837,6 +880,15 @@ export default function App() {
               setTargetBatchForPassportModal(tagId);
               setActiveTab('passports');
             }}
+          />
+        )}
+
+        {/* VIEW: Sol-Chronos Historical Spatial Analytics & Time-Series Tab (1988-2026) */}
+        {activeTab === 'chronos' && (
+          <SolChronosHub
+            language={language}
+            parcels={parcels}
+            onSwitchToGeneralGis={() => setActiveTab('gis')}
           />
         )}
 

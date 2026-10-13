@@ -307,7 +307,7 @@ export const INITIAL_HERDS: LivestockHerd[] = [
     herd_id: "HERD-CAM-01",
     name: "قطيع إبل المجاهيم - وادي البياض",
     nameEn: "Al-Majahim Camel Herd - Al-Bayad Valley",
-    rfid_batch_prefix: "RFID-SA-CAM-89100",
+    rfid_batch_prefix: "RFID-DZ-CAM-89100",
     count: 145,
     animalType: "CAMEL",
     animalTypeEn: "Majahim Camels",
@@ -321,19 +321,28 @@ export const INITIAL_HERDS: LivestockHerd[] = [
     recommendedRotationZone: "المنطقة C (وادي الغضا)",
     recommendedRotationZoneEn: "Zone C (Al-Ghadha Valley)",
     rfidSampleTags: [
-      "RFID-SA-CAM-89100-01",
-      "RFID-SA-CAM-89100-02",
-      "RFID-SA-CAM-89100-03"
-    ]
+      "RFID-DZ-CAM-89100-01",
+      "RFID-DZ-CAM-89100-02",
+      "RFID-DZ-CAM-89100-03"
+    ],
+    averageHti: 95.2,
+    boundaryWarning: false,
+    activeBioTelemetry: {
+      avgTemperatureC: 37.8,
+      avgHeartRateBpm: 58,
+      avgHti: 95.2,
+      boundaryBreachActive: false,
+      lastTelemetryPingUtc: "منذ 4 ثوانٍ"
+    }
   },
   {
     herd_id: "HERD-SHP-02",
-    name: "قطيع النعيمي المحسن - شعيب الخويش",
-    nameEn: "Nuaimi Sheep Herd - Al-Khuwaish Range",
-    rfid_batch_prefix: "RFID-SA-SHP-44210",
+    name: "قطيع أولاد جلال المحسن - شعيب السهوب",
+    nameEn: "Ouled Djellal Breeding Herd - Steppe Range",
+    rfid_batch_prefix: "RFID-DZ-SHP-44210",
     count: 380,
     animalType: "SHEEP",
-    animalTypeEn: "Nuaimi Breeding Sheep",
+    animalTypeEn: "Ouled Djellal Breeding Sheep",
     currentZone: "مرعى التلال الشرقية (المنطقة B)",
     currentZoneEn: "Eastern Hills Pasture (Zone B)",
     assignedSector: "SECTOR-PASTURE-B2",
@@ -344,10 +353,51 @@ export const INITIAL_HERDS: LivestockHerd[] = [
     recommendedRotationZone: "المرعى الموسمي الشمالي (المنطقة D)",
     recommendedRotationZoneEn: "Northern Seasonal Pasture (Zone D)",
     rfidSampleTags: [
-      "RFID-SA-SHP-44210-09",
-      "RFID-SA-SHP-44210-14",
-      "RFID-SA-SHP-44210-22"
-    ]
+      "RFID-DZ-SHP-44210-09",
+      "RFID-DZ-SHP-44210-14",
+      "RFID-DZ-SHP-44210-22"
+    ],
+    averageHti: 89.5,
+    boundaryWarning: true,
+    activeBioTelemetry: {
+      avgTemperatureC: 39.5, // Spiking
+      avgHeartRateBpm: 84,
+      avgHti: 89.5,
+      boundaryBreachActive: true,
+      lastTelemetryPingUtc: "منذ ثانية واحدة"
+    }
+  },
+  {
+    herd_id: "HERD-HOL-03",
+    name: "قطيع الأبقار الحلوب الأمريكية المستوردة (Texas ➔ المنيعة)",
+    nameEn: "US-DZ Strategic Holstein Dairy Herd (Texas ➔ El Menia)",
+    rfid_batch_prefix: "RFID-840-003-921",
+    count: 220,
+    animalType: "CATTLE",
+    animalTypeEn: "Genomic Holstein Cattle",
+    currentZone: "محيط الحظائر المبردة ومزارع الأعلاف (المنطقة C)",
+    currentZoneEn: "Evaporative Cooling Bio-Sanctuary (Zone C)",
+    assignedSector: "SECTOR-ODAS-DAIRY-C1",
+    coordinates: [24.155, 47.332],
+    biomassDensityIndex: 0.88,
+    grazingPressure: "BALANCED",
+    overgrazingAlert: false,
+    recommendedRotationZone: "ممرات التغذية الآلية (المرحلة 2)",
+    recommendedRotationZoneEn: "Automated Feeding Corridor (Phase 2)",
+    rfidSampleTags: [
+      "RFID-840-003-921-001",
+      "RFID-840-003-921-002",
+      "RFID-840-003-921-003"
+    ],
+    averageHti: 93.8,
+    boundaryWarning: false,
+    activeBioTelemetry: {
+      avgTemperatureC: 38.6,
+      avgHeartRateBpm: 72,
+      avgHti: 93.8,
+      boundaryBreachActive: false,
+      lastTelemetryPingUtc: "مباشر 14ms"
+    }
   }
 ];
 
@@ -742,7 +792,11 @@ export const INITIAL_KPIS: OperationsKPIs = {
   p1SlaCompliancePercent: 98.4,
   openP1Count: 1,
   openP2Count: 2,
-  offlineQueuePending: 0
+  offlineQueuePending: 0,
+  activeHerdCount: 745,
+  averageHTI: 92.4, // Heat Tolerance Index (/100)
+  boundaryWarningCount: 1, // Active boundary breach on Nuaimi sheep herd
+  criticalTempSpikeCount: 0
 };
 
 export interface SopRoleDefinition {
