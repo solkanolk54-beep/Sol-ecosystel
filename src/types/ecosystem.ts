@@ -132,7 +132,7 @@ export interface SystemEvent {
     | 'EVENT_LIVESTOCK_BOUNDARY_BREACH'
     | 'EVENT_QUALITY_PASSPORT_SEALED'
     | 'EVENT_SOVEREIGN_NODE_SYNC';
-  sourceSystem: 'SolVision' | 'Kareema' | 'AtlasCloud';
+  sourceSystem: 'SolVision' | 'Kareema' | 'AtlasCloud' | 'SolChronos';
   timestamp: string;
   payload: Record<string, any>;
   signatureHash: string; // SHA-256
@@ -333,7 +333,8 @@ export type AlgeriaPoleCategory =
   | 'SAHARAN_PIVOTS' 
   | 'OASIS_DATES' 
   | 'CEREAL_PLAINS' 
-  | 'HORTICULTURE_STEPPE';
+  | 'HORTICULTURE_STEPPE'
+  | 'MEDITERRANEAN_BASINS';
 
 export interface AgriGisParcelCadastre {
   id: string;

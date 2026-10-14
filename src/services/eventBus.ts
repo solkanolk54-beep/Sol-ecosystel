@@ -319,6 +319,96 @@ class SolEcosystemEventBus {
 
     return { telemetryEvent, dispatchWorkOrder };
   }
+
+  /**
+   * Sol-Chronos & SolVision: Dark-Drought Precision Intervention Protocol
+   * Dispatches automated precision irrigation and protective spraying work order to Kareema
+   * upon Ecological Tipping Point threshold breach.
+   */
+  public triggerDarkDroughtDispatchWorkflow(data: {
+    clusterId: string;
+    clusterName: string;
+    thermalSpikeC: number;
+    precipDeficitPercent: number;
+    tippingPointPercent: number;
+    coordinates: [number, number];
+    bbox?: { minLat: number; minLng: number; maxLat: number; maxLng: number };
+  }): {
+    stressEvent: SystemEvent;
+    workOrder: WorkOrder;
+  } {
+    const timestamp = new Date().toISOString();
+    const orderId = `WO-CHRONOS-DD-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const stressEvent = this.publish({
+      topic: 'solvision.crop-stress.v1',
+      eventType: 'EVENT_CROP_STRESS_DETECTED',
+      sourceSystem: 'SolChronos',
+      payload: {
+        simulation_code: 'EXERCISE-DARK-DROUGHT-CHRONOS-2026',
+        cluster_id: data.clusterId,
+        cluster_name: data.clusterName,
+        thermal_spike_c: data.thermalSpikeC,
+        precipitation_deficit_percent: data.precipDeficitPercent,
+        tipping_point_percent: data.tippingPointPercent,
+        canopy_status: 'SUB_SURFACE_WATER_DEFICIT_DARK_DROUGHT',
+        action_required: 'PRECISION_IRRIGATION_AND_CANOPY_PROTECTION_SPRAYING'
+      }
+    });
+
+    const isOlive = data.clusterId.includes('olive') || data.clusterId.includes('mila');
+    const isDjelfa = data.clusterId.includes('djelfa') || data.clusterId.includes('green-dam');
+
+    const workOrder: WorkOrder = {
+      order_id: orderId,
+      trigger_event_id: stressEvent.event_id,
+      asset_id: `ASSET-CHRONOS-${data.clusterId.toUpperCase()}`,
+      assetName: data.clusterName,
+      title: isOlive
+        ? `طوارئ Dark-Drought: جفاف تحت سطحي في بساتين زيتون ميلة (نقطة التحول ${data.tippingPointPercent}%)`
+        : isDjelfa
+        ? `طوارئ مناخية: موجة حرارة بالسد الأخضر بالجلفة (+${data.thermalSpikeC}°C - نقطة التحول ${data.tippingPointPercent}%)`
+        : `استجابة طارئة: خرق عتبة الجفاف البيئي في ${data.clusterName} (${data.tippingPointPercent}%)`,
+      titleEn: `Dark-Drought Emergency: Sub-surface Stress in ${data.clusterName} (Tipping Point: ${data.tippingPointPercent}%)`,
+      description: `تجاوز مؤشر الإجهاد البيئي عتبة الخطر (${data.tippingPointPercent}%) تحت وطأة ارتفاع حراري (+${data.thermalSpikeC}°C) وعجز تساقط (${data.precipDeficitPercent}%). تم تفعيل بروتوكول Kareema للرش الوقائي بمحفزات الحيوية (Biostimulants) والري التكميلي فائق الدقة.`,
+      descriptionEn: `Ecological Tipping Point breached (${data.tippingPointPercent}%) under +${data.thermalSpikeC}°C thermal anomaly and ${data.precipDeficitPercent}% precipitation deficit. Automated Kareema dispatch for precision irrigation and anti-transpirant biostimulant spraying deployed.`,
+      severity: 'CRITICAL',
+      status: 'DISPATCHED',
+      assignedFleetId: isOlive ? 'FLEET-GPS-DRN-05' : 'FLEET-GPS-TRK-01',
+      assignedTechnician: isOlive 
+        ? 'م. سمير بودربالة (مهندس زراعي - حوض وادي العثمانية)' 
+        : 'م. عبد القادر بلقاسم (فريق الطوارئ الميداني)',
+      coordinates: data.coordinates,
+      bbox: data.bbox || {
+        minLat: data.coordinates[0] - 0.005,
+        minLng: data.coordinates[1] - 0.005,
+        maxLat: data.coordinates[0] + 0.005,
+        maxLng: data.coordinates[1] + 0.005
+      },
+      createdAt: timestamp.replace('T', ' ').slice(0, 19) + ' UTC',
+      etaMinutes: 14,
+      solutionType: 'IRRIGATION_BOOST',
+      slaLevel: 'P1_CRITICAL',
+      slaMaxMinutes: 20,
+      slaRemainingMinutes: 16
+    };
+
+    this.publish({
+      topic: 'atlas.work-orders.v1',
+      eventType: 'EVENT_WORK_ORDER_DISPATCHED',
+      sourceSystem: 'Kareema',
+      payload: {
+        order_id: orderId,
+        action: 'PRECISION_IRRIGATION_AND_SPRAYING_DEPLOYED',
+        tipping_point: `${data.tippingPointPercent}%`,
+        coordinates: data.coordinates
+      }
+    });
+
+    this.workOrderListeners.forEach(fn => fn(workOrder));
+
+    return { stressEvent, workOrder };
+  }
 }
 
 export const eventBus = new SolEcosystemEventBus();
