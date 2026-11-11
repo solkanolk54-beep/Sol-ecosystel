@@ -43,6 +43,7 @@ import { AgriGisAlgerieHub } from './components/agrigis/AgriGisAlgerieHub';
 import { UsDzAirliftTraceHub } from './components/operations/UsDzAirliftTraceHub';
 import { SolChronosHub } from './components/chronos/SolChronosHub';
 import { SolChronosBaselineCard } from './components/chronos/SolChronosBaselineCard';
+import { RoadmapSprintHub } from './components/roadmap/RoadmapSprintHub';
 import { 
   Satellite, 
   Radio, 
@@ -59,12 +60,13 @@ import {
   Zap,
   HardDrive,
   Plane,
-  History as HistoryIcon
+  History as HistoryIcon,
+  Compass
 } from 'lucide-react';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('ar');
-  const [activeTab, setActiveTab] = useState<'gis' | 'agrigis' | 'airlift' | 'chronos' | 'passports' | 'sovereign' | 'api'>('gis');
+  const [activeTab, setActiveTab] = useState<'gis' | 'agrigis' | 'airlift' | 'chronos' | 'passports' | 'sovereign' | 'api' | 'roadmap'>('gis');
 
   // SOP Role state (Section 2 of SOP)
   const [currentRole, setCurrentRole] = useState<UserRole>('ALL');
@@ -682,6 +684,14 @@ export default function App() {
                       <span>{isAr ? 'منظومة Sol-Chronos ⏳' : 'Sol-Chronos ⏳'}</span>
                     </button>
 
+                    <button
+                      onClick={() => setActiveTab('roadmap')}
+                      className="px-2.5 py-1 rounded bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-300 font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:border-cyan-400"
+                    >
+                      <Compass className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>{isAr ? 'خريطة الطريق V3.4 🧭' : 'Roadmap V3.4 🧭'}</span>
+                    </button>
+
                     {isBlackoutActive ? (
                       <span className="font-mono text-[11px] text-amber-400 flex items-center gap-1">
                         <HardDrive className="w-3 h-3" />
@@ -918,6 +928,25 @@ export default function App() {
         {activeTab === 'api' && (
           <OpenApiDocs
             language={language}
+          />
+        )}
+
+        {/* VIEW 5: Roadmap V3.4 Engineering Backlog & Directives */}
+        {activeTab === 'roadmap' && (
+          <RoadmapSprintHub
+            language={language}
+            onNavigateToTab={(tab) => setActiveTab(tab)}
+            onTriggerAlert={(title, message) => {
+              setEmailToastNotification({
+                title,
+                subtitle: message,
+                time: new Date().toLocaleTimeString(),
+                orderId: 'ROADMAP-ALERT-' + Math.floor(Math.random() * 9000 + 1000)
+              });
+              setTimeout(() => {
+                setEmailToastNotification(null);
+              }, 6000);
+            }}
           />
         )}
       </main>

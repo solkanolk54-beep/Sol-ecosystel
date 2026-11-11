@@ -14,7 +14,11 @@ import {
   OdasConcession,
   WaterTableSensorNode,
   AirliftMission,
-  CowIndividualPedigree
+  CowIndividualPedigree,
+  PiezometerTelemetryRecord,
+  OfflineSyncFormRecord,
+  MlYieldForecastModel,
+  CustomsExportDossier
 } from '../types/ecosystem';
 
 export const INITIAL_PARCELS: ParcelAsset[] = [
@@ -1513,6 +1517,148 @@ export const ALGERIA_AGRIGIS_POLES: AgriGisWilayaPole[] = [
         nitrogenPpm: 92
       }
     ]
+  },
+  {
+    id: "naama-steppe-cereal",
+    wilayaNumber: 45,
+    nameAr: "قطب النعامة وسهوب المشرية للحبوب المقاومة والمراعي الرعوية",
+    nameEn: "Naama & Mecheria Steppic Resilient Cereals & Agropastoral Pole",
+    nameFr: "Pôle Céréalier & Agropastoral de Naâma (Mécheria)",
+    category: "CEREAL_PLAINS",
+    categoryLabelAr: "الحبوب السهبية المقاومة والمراعي الذكية",
+    categoryLabelEn: "Resilient Steppic Cereals & Smart Rangelands",
+    descriptionAr: "محيط استراتيجي يدمج زراعة الشعير والقمح الصلب المقاوم للجفاف في سهول المشرية وعين الصفراء مع إدارة رعي الأغنام عبر تتبع الأقمار الصناعية وحماية السد الأخضر.",
+    descriptionEn: "Strategic perimeter merging drought-tolerant barley and durum wheat in Mecheria & Ain Sefra with satellite livestock grazing and Green Dam preservation.",
+    totalAreaHectares: 95000,
+    activePivotsCount: 165,
+    primaryCropsAr: ["شعير محلي عالي المقاومة", "قمح صلب مروي جزئياً", "خرطال علفي (أفوان)", "شجيرات الرعي (أتريبلكس)"],
+    primaryCropsEn: ["Resilient Saharan Barley", "Semi-Irrigated Durum Wheat", "Forage Oats", "Atriplex Halimus Fodder"],
+    waterSourceAr: "فرشة الشط الغربي ومياه الآبار العميقة لسلسلة الأطلس الصحراوي",
+    waterSourceEn: "Chott Chergui Deep Aquifer & Saharan Atlas Fractured Wells",
+    waterTableDepthMeters: 85,
+    waterAquiferName: "الفرشة الجوفية لسهول الشط الغربي",
+    alsatResolution: "Alsat-2A (2.5m) + Alsat-1B Biomass Swath",
+    coordinates: [33.590, -0.280],
+    dasConcessionsCount: 38,
+    annualProductionTons: 220000,
+    ndviHealthIndex: 0.67,
+    droughtVulnerability: "HIGH",
+    keyPerimeter: "محيطات المشرية، عين الصفراء وتيوت الرعوية المروية",
+    parcels: [
+      {
+        id: "DZ-NAA-MECH-01",
+        code: "DZ-NAAMA-01",
+        nameAr: "محور المشرية النموذجي 01 (الشعير المقاوم)",
+        nameEn: "Mecheria Model Pivot 01 (Resilient Barley)",
+        cropAr: "شعير محلي مقاوم للجفاف (بذور معتمدة)",
+        cropEn: "Drought-Resilient Local Seed Barley",
+        areaHa: 65.0,
+        irrigationTypeAr: "رش محوري تكميلي موفر للمياه",
+        irrigationTypeEn: "Water-Saving Supplementary Center Pivot",
+        status: "OPTIMAL",
+        ndvi: 0.69,
+        moisturePercent: 42.0,
+        waterFlowLps: 78,
+        pivotRadiusM: 455,
+        rotationArmAngle: 110,
+        coordinates: [33.585, -0.275],
+        waterWellDepthM: 92,
+        soilEcSalinity: 1.15,
+        nitrogenPpm: 76
+      },
+      {
+        id: "DZ-NAA-SEF-02",
+        code: "DZ-NAAMA-02",
+        nameAr: "محيط عين الصفراء الاستثماري 02 (الأعلاف ومصدات الرياح)",
+        nameEn: "Ain Sefra Investment Perimeter 02 (Forage & Windbreaks)",
+        cropAr: "أعلاف شتوية وخرطال مروي",
+        cropEn: "Winter Forage & Irrigated Oats",
+        areaHa: 58.0,
+        irrigationTypeAr: "ري بالرش الموضعي المنخفض الضغط",
+        irrigationTypeEn: "Low-Pressure Localized Sprinkler",
+        status: "OPTIMAL",
+        ndvi: 0.64,
+        moisturePercent: 39.5,
+        waterFlowLps: 70,
+        pivotRadiusM: 430,
+        rotationArmAngle: 215,
+        coordinates: [32.750, -0.580],
+        waterWellDepthM: 105,
+        soilEcSalinity: 1.28,
+        nitrogenPpm: 72
+      }
+    ]
+  },
+  {
+    id: "el-bayadh-brezina",
+    wilayaNumber: 32,
+    nameAr: "قطب البيض وبريزينة للزراعات الاستراتيجية وحبوب السهوب العليا",
+    nameEn: "El Bayadh & Brezina Strategic Cereal & High Steppe Pole",
+    nameFr: "Pôle Céréalier et Fourrager d'El Bayadh (Brezina)",
+    category: "SAHARAN_PIVOTS",
+    categoryLabelAr: "محاور الحبوب الجنوبية وسدود بريزينة",
+    categoryLabelEn: "Southern Strategic Grains & Brezina Dam Basin",
+    descriptionAr: "محيط بريزينة والأبيض سيدي الشيخ العملاق للحبوب والأعلاف المروية بالرش المحوري؛ يستفيد من سد لاروية ومياه الفرشات العميقة للأطلس الصحراوي لإنتاج بذور القمح والذرة العلفية.",
+    descriptionEn: "Brezina & El Abiodh Sidi Cheikh grain and fodder mega-perimeter tapping Brezina Dam (Larouia) and deep aquifers for foundation wheat and forage corn.",
+    totalAreaHectares: 110000,
+    activePivotsCount: 210,
+    primaryCropsAr: ["قمح صلب بذور نقية (صنف البشير)", "ذرة علفية مروية", "شعير رعوي", "أعلاف خضراء مركزة"],
+    primaryCropsEn: ["Foundation Durum Wheat (El Béchir)", "Irrigated Silage Corn", "Pastoral Barley", "Green Fodder Concentrates"],
+    waterSourceAr: "سد بريزينة (لاروية) وفرشة رمال الأبيض سيدي الشيخ",
+    waterSourceEn: "Brezina Larouia Dam & El Abiodh Sidi Cheikh Sand Aquifer",
+    waterTableDepthMeters: 110,
+    waterAquiferName: "حوض الأطلس الصحراوي الجنوبي لبريزينة",
+    alsatResolution: "Alsat-2B (2.5m) + Sentinel-2 MSI Multi-band",
+    coordinates: [33.100, 1.050],
+    dasConcessionsCount: 44,
+    annualProductionTons: 295000,
+    ndviHealthIndex: 0.72,
+    droughtVulnerability: "MEDIUM",
+    keyPerimeter: "محيط بريزينة الفلاحي، الأبيض سيدي الشيخ ورڤاصة",
+    parcels: [
+      {
+        id: "DZ-BYD-BRZ-01",
+        code: "DZ-BAYADH-01",
+        nameAr: "محور بريزينة الرشاش 01 (سد لاروية)",
+        nameEn: "Brezina Pivot 01 (Larouia Dam Feed)",
+        cropAr: "قمح صلب استراتيجي بذور نقية (محمد البشير)",
+        cropEn: "Strategic Durum Wheat (Foundation Strain)",
+        areaHa: 72.0,
+        irrigationTypeAr: "رش محوري هيدروليكي مضغوط",
+        irrigationTypeEn: "High-Pressure Pressurized Center Pivot",
+        status: "OPTIMAL",
+        ndvi: 0.73,
+        moisturePercent: 46.8,
+        waterFlowLps: 96,
+        pivotRadiusM: 478,
+        rotationArmAngle: 145,
+        coordinates: [33.090, 1.045],
+        waterWellDepthM: 115,
+        soilEcSalinity: 1.08,
+        nitrogenPpm: 84
+      },
+      {
+        id: "DZ-BYD-ABY-02",
+        code: "DZ-BAYADH-02",
+        nameAr: "محور الأبيض سيدي الشيخ 02 (امتياز ODAS)",
+        nameEn: "El Abiodh Sidi Cheikh Pivot 02 (ODAS Concession)",
+        cropAr: "ذرة علفية صفراء وبرسيم حجازي",
+        cropEn: "Silage Yellow Maize & Alfalfa",
+        areaHa: 80.0,
+        irrigationTypeAr: "رش محوري موفر للطاقة الشمسية",
+        irrigationTypeEn: "Solar Powered Dual-Crop Pivot",
+        status: "IRRIGATING",
+        ndvi: 0.71,
+        moisturePercent: 48.0,
+        waterFlowLps: 104,
+        pivotRadiusM: 504,
+        rotationArmAngle: 290,
+        coordinates: [32.890, 0.540],
+        waterWellDepthM: 130,
+        soilEcSalinity: 1.20,
+        nitrogenPpm: 80
+      }
+    ]
   }
 ];
 
@@ -1663,6 +1809,63 @@ export const ODAS_CONCESSIONS: OdasConcession[] = [
     status: "OPERATIONAL_HARVEST",
     investmentTier: "AGRI_INDUSTRIAL",
     approvalDate: "2023-08-10"
+  },
+  {
+    id: "ODAS-DZ-05",
+    code: "ODAS-MENIA-2026-SEBSEB-05",
+    investorNameAr: "مجمع المحاصيل الاستراتيجية الصحراوية - امتياز سبسب",
+    investorNameEn: "Saharan Strategic Crops Consortium - Sebseb Concession",
+    wilayaAr: "المنيعة (ولاية 58)",
+    wilayaEn: "El Menia (Wilaya 58)",
+    perimeterNameAr: "محيط سبسب للحبوب والذرة الصفراء",
+    perimeterNameEn: "Sebseb Cereal & Yellow Corn Basin",
+    allocatedHectares: 12500,
+    cultivatedHectares: 10800,
+    targetCropsAr: "قمح صلب (صنف سيرتا)، ذرة علفية صفراء هجين",
+    targetCropsEn: "Durum Wheat (Cirta), Hybrid Silage Corn",
+    boreholesCount: 22,
+    boreholeAvgDepthM: 410,
+    status: "OPERATIONAL_HARVEST",
+    investmentTier: "STRATEGIC_NATIONAL",
+    approvalDate: "2024-05-12"
+  },
+  {
+    id: "ODAS-DZ-06",
+    code: "ODAS-NAAMA-2026-STEPPE-06",
+    investorNameAr: "ديوان تطوير الزراعات السهبية والرعوية - المشرية",
+    investorNameEn: "Steppic Agropastoral Development Agency - Mecheria",
+    wilayaAr: "النعامة (ولاية 45)",
+    wilayaEn: "Naama (Wilaya 45)",
+    perimeterNameAr: "محيط المشرية وعين الصفراء للحبوب الرعوية المقاومة",
+    perimeterNameEn: "Mecheria & Ain Sefra Resilient Cereal Basin",
+    allocatedHectares: 18000,
+    cultivatedHectares: 14200,
+    targetCropsAr: "شعير مقاوم للجفاف، قمح صلب مروي، أعلاف خضراء",
+    targetCropsEn: "Drought-Tolerant Barley, Semi-Irrigated Wheat, Fodder",
+    boreholesCount: 28,
+    boreholeAvgDepthM: 95,
+    status: "OPERATIONAL_HARVEST",
+    investmentTier: "STRATEGIC_NATIONAL",
+    approvalDate: "2024-06-18"
+  },
+  {
+    id: "ODAS-DZ-07",
+    code: "ODAS-BAYADH-2026-CEREAL-07",
+    investorNameAr: "شراكة بريزينة الفلاحية الكبرى (سد لاروية ومحاور الجنوب)",
+    investorNameEn: "Brezina Agricultural Mega-Consortium (Larouia Dam Feed)",
+    wilayaAr: "البيض (ولاية 32)",
+    wilayaEn: "El Bayadh (Wilaya 32)",
+    perimeterNameAr: "محيط بريزينة والأبيض سيدي الشيخ المروي",
+    perimeterNameEn: "Brezina & El Abiodh Sidi Cheikh Strategic Perimeter",
+    allocatedHectares: 22000,
+    cultivatedHectares: 17500,
+    targetCropsAr: "قمح صلب بذور نقية (البشير)، ذرة سيلاج، برسيم",
+    targetCropsEn: "Foundation Durum Seeds (El Béchir), Silage Corn, Alfalfa",
+    boreholesCount: 32,
+    boreholeAvgDepthM: 120,
+    status: "EXPANSION_PHASE",
+    investmentTier: "STRATEGIC_NATIONAL",
+    approvalDate: "2024-07-22"
   }
 ];
 
@@ -2129,3 +2332,289 @@ export const US_DZ_AIRLIFT_MISSIONS: AirliftMission[] = [
     ]
   }
 ];
+
+// ==========================================
+// ROADMAP SPRINT EXECUTION DATASETS
+// ==========================================
+
+export const BENI_HAROUN_PIEZOMETERS: PiezometerTelemetryRecord[] = [
+  {
+    id: "PIEZO-BH-01",
+    stationId: "BH-DAM-CREST-01",
+    stationNameAr: "محطة مراقبة تاج سد بني هارون ومفيض المياه الرئيسي",
+    stationNameEn: "Beni Haroun Dam Crest & Main Spillway Station",
+    damReservoir: "BENI_HAROUN",
+    timestamp: "2026-10-11T12:45:00Z",
+    waterLevelMeters: 194.8,
+    reservoirVolumeMCM: 892.4, // out of 1000 MCM
+    piezometricPressureKPa: 512.4,
+    seepageFlowLps: 4.15,
+    crestDeformationMm: 1.8,
+    hydraulicHeadLossM: 0.42,
+    mqttTopic: "sol.telemetry.piezometer.v1/beni-haroun/crest-01",
+    ingestLatencyMs: 2420, // < 5000ms SLA
+    status: "OPTIMAL",
+    connectionStatus: "CONNECTED"
+  },
+  {
+    id: "PIEZO-AT-02",
+    stationId: "AT-FLOAT-PUMP-02",
+    stationNameAr: "محطة الضخ العائمة لعين التين - خط تحويل المياه",
+    stationNameEn: "Ain Tine Floating Pumping Telemetry Station",
+    damReservoir: "AIN_TINE",
+    timestamp: "2026-10-11T12:44:58Z",
+    waterLevelMeters: 215.3,
+    reservoirVolumeMCM: 148.6,
+    piezometricPressureKPa: 684.2,
+    seepageFlowLps: 2.80,
+    crestDeformationMm: 0.9,
+    hydraulicHeadLossM: 0.88,
+    mqttTopic: "sol.telemetry.piezometer.v1/ain-tine/pump-02",
+    ingestLatencyMs: 1980, // < 5000ms SLA
+    status: "OPTIMAL",
+    connectionStatus: "CONNECTED"
+  },
+  {
+    id: "PIEZO-OA-03",
+    stationId: "OA-GALLERY-03",
+    stationNameAr: "رواق الصرف والتوازن الباطني - واد العثمانية",
+    stationNameEn: "Oued Athmania Underground Drainage & Equilibrium Gallery",
+    damReservoir: "OUED_ATHMANIA",
+    timestamp: "2026-10-11T12:44:52Z",
+    waterLevelMeters: 182.1,
+    reservoirVolumeMCM: 34.0,
+    piezometricPressureKPa: 420.0,
+    seepageFlowLps: 5.60,
+    crestDeformationMm: 2.4,
+    hydraulicHeadLossM: 1.12,
+    mqttTopic: "sol.telemetry.piezometer.v1/oued-athmania/gallery-03",
+    ingestLatencyMs: 3890,
+    status: "ELEVATED",
+    connectionStatus: "FALLBACK_WEBHOOK"
+  },
+  {
+    id: "PIEZO-DD-04",
+    stationId: "DD-SURGE-04",
+    stationNameAr: "برج التهدئة والتحكم الهيدروليكي - ذراع الديس",
+    stationNameEn: "Draa Dis Surge Tank & Pressure Release Terminal",
+    damReservoir: "DRAA_DIS",
+    timestamp: "2026-10-11T12:45:01Z",
+    waterLevelMeters: 298.5,
+    reservoirVolumeMCM: 18.2,
+    piezometricPressureKPa: 745.0,
+    seepageFlowLps: 1.45,
+    crestDeformationMm: 0.5,
+    hydraulicHeadLossM: 0.65,
+    mqttTopic: "sol.telemetry.piezometer.v1/draa-dis/surge-04",
+    ingestLatencyMs: 2150,
+    status: "OPTIMAL",
+    connectionStatus: "CONNECTED"
+  }
+];
+
+export const INITIAL_OFFLINE_SYNC_QUEUE: OfflineSyncFormRecord[] = [
+  {
+    id: "SYNC-MILA-VET-01",
+    formType: "VETERINARY_INSPECTION",
+    inspectorName: "د. عبد الرزاق بن يوسف",
+    inspectorRole: "VETERINARY_DOCTOR",
+    wilaya: "ميلة (ولاية 43)",
+    zoneId: "MILA-TESSALA-LAMTAI",
+    coordinates: [36.425, 6.180],
+    capturedAt: "2026-10-11T09:15:00Z",
+    syncedAt: "2026-10-11T11:42:10Z",
+    syncStatus: "RECONCILED",
+    retryCount: 0,
+    payload: {
+      herdId: "HERD-OUL-01",
+      animalsInspected: 120,
+      vaccinationBatch: "VAC-FMD-DZ-2026-B8",
+      rfidAuditMatchedCount: 120,
+      averageHtiScore: 92.4,
+      abnormalTempDetected: false,
+      notesAr: "تم فحص قطيع النعاج في مرتفعات تسالة لمطاعي؛ الحالة الصحية ممتازة والتطعيم الدوري مكتمل."
+    },
+    sha256Signature: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    id: "SYNC-MILA-IRR-02",
+    formType: "IRRIGATION_VALVE_CHECK",
+    inspectorName: "م. كريم بلمداني",
+    inspectorRole: "IRRIGATION_ENGINEER",
+    wilaya: "ميلة (ولاية 43)",
+    zoneId: "MILA-BAINAN-BASIN",
+    coordinates: [36.578, 6.082],
+    capturedAt: "2026-10-11T10:30:00Z",
+    syncedAt: undefined,
+    syncStatus: "QUEUED_LOCAL",
+    retryCount: 2,
+    payload: {
+      valveId: "VLV-BAINAN-MAIN-04",
+      hydraulicPressureBar: 4.8,
+      flowRateLps: 118,
+      cavitationIndex: 0.12,
+      actuatorTorqueNm: 42.5,
+      maintenanceRequired: false,
+      notesAr: "فحص الصمام الهيدروليكي المغذي لبساتين الزيتون في باينان؛ ضغط التدفق منتظم مع رصد طفيف للبخر."
+    },
+    sha256Signature: "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4"
+  },
+  {
+    id: "SYNC-MILA-SOIL-03",
+    formType: "CROP_SOIL_SAMPLE",
+    inspectorName: "د. سامية لعريبي",
+    inspectorRole: "AGRONOMIST",
+    wilaya: "ميلة (ولاية 43)",
+    zoneId: "MILA-ROUACHED-BASIN",
+    coordinates: [36.438, 6.012],
+    capturedAt: "2026-10-11T11:00:00Z",
+    syncedAt: undefined,
+    syncStatus: "QUEUED_LOCAL",
+    retryCount: 1,
+    payload: {
+      sampleId: "SOIL-ROU-2026-088",
+      cropObserved: "قمح صلب مروي",
+      soilMoisturePercent: 49.2,
+      salinityEc: 0.82,
+      phValue: 7.1,
+      nitrogenPpm: 84,
+      phosphorusPpm: 36,
+      potassiumPpm: 215,
+      notesAr: "تحليل تربة حوض الرواشد بعد دورة الري التكميلي، توافر النيتروجين مثالي لمرحلة امتلاء الحبوب."
+    },
+    sha256Signature: "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+  }
+];
+
+export const INITIAL_ML_YIELD_MODELS: MlYieldForecastModel[] = [
+  {
+    id: "ML-YIELD-WHT-01",
+    cropType: "DURUM_WHEAT",
+    cropTypeAr: "القمح الصلب الاستراتيجي (سيميتو / سخا 95)",
+    zoneNameAr: "محاور المنيعة وبريزينة وسرسو",
+    zoneNameEn: "El Menia, Brezina & Sersou Strategic Pivots",
+    targetHarvestDate: "2026-05-25",
+    forecastWindowDays: 30,
+    predictedYieldTonsPerHa: 6.85,
+    historicalAverageTonsPerHa: 5.40,
+    gainVsHistoricalPercent: 26.8,
+    modelAccuracyPercent: 96.2,
+    confidenceLowerBound: 6.50,
+    confidenceUpperBound: 7.20,
+    featuresUsed: {
+      ndviPeak: 0.81,
+      eviIndex: 0.58,
+      gddThermalSum: 1840,
+      waterDeficitSumMm: 45,
+      soilNitrogenPpm: 88
+    },
+    algorithm: "XGBoost-Regressor-v3.4",
+    generatedAt: "2026-10-11T12:00:00Z"
+  },
+  {
+    id: "ML-YIELD-OLV-02",
+    cropType: "OLIVES_CHEMLAL",
+    cropTypeAr: "زيتون الشملال عالي الزيت (بساتين ميلة وسد بني هارون)",
+    zoneNameAr: "أحواض ميلة وبني هارون والرواشد",
+    zoneNameEn: "Mila, Beni Haroun & Rouached Olive Groves",
+    targetHarvestDate: "2026-11-15",
+    forecastWindowDays: 30,
+    predictedYieldTonsPerHa: 8.40,
+    historicalAverageTonsPerHa: 6.80,
+    gainVsHistoricalPercent: 23.5,
+    modelAccuracyPercent: 95.8,
+    confidenceLowerBound: 8.05,
+    confidenceUpperBound: 8.75,
+    featuresUsed: {
+      ndviPeak: 0.79,
+      eviIndex: 0.52,
+      gddThermalSum: 2120,
+      waterDeficitSumMm: 28,
+      soilNitrogenPpm: 92
+    },
+    algorithm: "RandomForest-Ensemble",
+    generatedAt: "2026-10-11T12:00:00Z"
+  },
+  {
+    id: "ML-YIELD-SIG-03",
+    cropType: "OLIVES_SIGOISE",
+    cropTypeAr: "زيتون السيقواز ثنائي الغرض (مائدة وعصر فاخر)",
+    zoneNameAr: "سهول باينان وتيارت وسيق",
+    zoneNameEn: "Bainan, Tiaret & Sig Plains",
+    targetHarvestDate: "2026-11-05",
+    forecastWindowDays: 30,
+    predictedYieldTonsPerHa: 9.10,
+    historicalAverageTonsPerHa: 7.60,
+    gainVsHistoricalPercent: 19.7,
+    modelAccuracyPercent: 94.6,
+    confidenceLowerBound: 8.70,
+    confidenceUpperBound: 9.50,
+    featuresUsed: {
+      ndviPeak: 0.77,
+      eviIndex: 0.50,
+      gddThermalSum: 2080,
+      waterDeficitSumMm: 34,
+      soilNitrogenPpm: 85
+    },
+    algorithm: "XGBoost-Regressor-v3.4",
+    generatedAt: "2026-10-11T12:00:00Z"
+  },
+  {
+    id: "ML-YIELD-BAR-04",
+    cropType: "SAHARAN_BARLEY",
+    cropTypeAr: "الشعير الصحراوي الرعوي المقاوم للجفاف",
+    zoneNameAr: "سهول النعامة وعين الصفراء والمشرية",
+    zoneNameEn: "Naama, Ain Sefra & Mecheria Steppe",
+    targetHarvestDate: "2026-05-10",
+    forecastWindowDays: 30,
+    predictedYieldTonsPerHa: 4.60,
+    historicalAverageTonsPerHa: 3.50,
+    gainVsHistoricalPercent: 31.4,
+    modelAccuracyPercent: 94.8,
+    confidenceLowerBound: 4.25,
+    confidenceUpperBound: 4.95,
+    featuresUsed: {
+      ndviPeak: 0.68,
+      eviIndex: 0.44,
+      gddThermalSum: 1690,
+      waterDeficitSumMm: 62,
+      soilNitrogenPpm: 76
+    },
+    algorithm: "XGBoost-Regressor-v3.4",
+    generatedAt: "2026-10-11T12:00:00Z"
+  }
+];
+
+export const INITIAL_CUSTOMS_DOSSIERS: CustomsExportDossier[] = [
+  {
+    certificateId: "DZ-CUSTOMS-EXP-2026-00891",
+    commodityTypeAr: "زيت زيتون بكر ممتاز درجة أولى (حموضة < 0.28%)",
+    commodityTypeEn: "Extra Virgin Olive Oil (Acidity < 0.28%)",
+    batchId: "BATCH-MILA-EVOO-2026-OCT",
+    concessionCode: "DZ-MILA-BH-01",
+    exporterEntity: "الديوان الوطني للتصدير الزراعي - فرع ميلة",
+    destinationPort: "ميناء مرسيليا التجاري / الاتحاد الأوروبي",
+    volumeMetricTons: 120.0,
+    purityCertification: "مطابق لمعايير المجلس الدولي للزيتون (IOC-ST-2026)",
+    organicClassification: true,
+    sha256VerifiableCredential: "f4b238914b1b86d9a92a7f5ec3bc271249b6b801a21e06fa99e527d2c3e1e69b",
+    customsGatewayStatus: "SEALED_VALID",
+    issuedAt: "2026-10-11T08:30:00Z"
+  },
+  {
+    certificateId: "DZ-CUSTOMS-EXP-2026-00892",
+    commodityTypeAr: "تمور دقلة نور ملكية معتمدة جغرافياً (IG Tolga)",
+    commodityTypeEn: "Royal Deglet Nour Dates (PGI Tolga Certified)",
+    batchId: "BATCH-BSK-DGL-2026-NOV",
+    concessionCode: "DZ-BSK-PLM-01",
+    exporterEntity: "مجمع تمور الزيبان الفاخرة - طولقة",
+    destinationPort: "ميناء الدوحة التجاري / منطقة الخليج العربي",
+    volumeMetricTons: 250.0,
+    purityCertification: "شهادة المنشأ الوطنية + خلو تام من المتبقيات (ISO 22000)",
+    organicClassification: true,
+    sha256VerifiableCredential: "3f9d51829e18b456f918c72837a4b6510a2f45812e9b812a6572e91cf5489012",
+    customsGatewayStatus: "SEALED_VALID",
+    issuedAt: "2026-10-11T09:15:00Z"
+  }
+];
+

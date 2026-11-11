@@ -19,15 +19,16 @@ import {
   PinOff,
   Wheat,
   Plane,
-  History
+  History,
+  Compass
 } from 'lucide-react';
 import { Language, SovereignCloudStatus, UserRole } from '../../types/ecosystem';
 
 interface HeaderProps {
   language: Language;
   setLanguage: (lang: Language) => void;
-  activeTab: 'gis' | 'agrigis' | 'airlift' | 'chronos' | 'passports' | 'sovereign' | 'api';
-  setActiveTab: (tab: 'gis' | 'agrigis' | 'airlift' | 'chronos' | 'passports' | 'sovereign' | 'api') => void;
+  activeTab: 'gis' | 'agrigis' | 'airlift' | 'chronos' | 'passports' | 'sovereign' | 'api' | 'roadmap';
+  setActiveTab: (tab: 'gis' | 'agrigis' | 'airlift' | 'chronos' | 'passports' | 'sovereign' | 'api' | 'roadmap') => void;
   cloudStatus: SovereignCloudStatus;
   currentRole?: UserRole;
   onSimulateStress: () => void;
@@ -271,6 +272,21 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Code2 className="w-3.5 h-3.5" />
             <span>{isAr ? 'معمارية REST & OpenAPI' : 'OpenAPI Specs'}</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('roadmap')}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap ${
+              activeTab === 'roadmap'
+                ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-sm border border-cyan-400/50'
+                : 'text-cyan-400/90 hover:text-cyan-300 hover:bg-slate-800/80'
+            }`}
+          >
+            <Compass className="w-3.5 h-3.5 text-cyan-400" />
+            <span>{isAr ? 'خريطة الطريق والهندسة V3.4' : 'V3.4 Roadmap & Engineering'}</span>
+            <span className="text-[10px] font-mono px-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              SPRINT
+            </span>
           </button>
         </div>
 

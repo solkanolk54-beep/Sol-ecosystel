@@ -20,6 +20,9 @@ export type EventTopic =
   | 'kareema.livestock-rfid.v1'
   | 'kareema.grazing-warning.v1'
   | 'sol.telemetry.livestock.v3'
+  | 'sol.telemetry.piezometer.v1'
+  | 'atlas.offline-sync.v1'
+  | 'solvision.ml-yield-forecast.v1'
   | 'atlas.passport-sealed.v1';
 
 export interface BoundingBox {
@@ -562,3 +565,84 @@ export interface LivestockAlertDeepLink {
   alertReason?: string;
   orderId?: string;
 }
+
+// ==========================================
+// ROADMAP SPRINT EXECUTION BACKLOG TYPES
+// ==========================================
+
+export interface PiezometerTelemetryRecord {
+  id: string;
+  stationId: string; // e.g. "BH-MAIN-01", "AT-FLOAT-02"
+  stationNameAr: string;
+  stationNameEn: string;
+  damReservoir: 'BENI_HAROUN' | 'AIN_TINE' | 'OUED_ATHMANIA' | 'DRAA_DIS';
+  timestamp: string;
+  waterLevelMeters: number; // e.g. 194.8 m
+  reservoirVolumeMCM: number; // Millions m³ (Max 1000 MCM)
+  piezometricPressureKPa: number; // Pore pressure
+  seepageFlowLps: number;
+  crestDeformationMm: number;
+  hydraulicHeadLossM: number;
+  mqttTopic: string;
+  ingestLatencyMs: number;
+  status: 'OPTIMAL' | 'ELEVATED' | 'CRITICAL_SPILLWAY';
+  connectionStatus: 'CONNECTED' | 'RETRY_QUEUE' | 'FALLBACK_WEBHOOK';
+}
+
+export interface OfflineSyncFormRecord {
+  id: string;
+  formType: 'VETERINARY_INSPECTION' | 'IRRIGATION_VALVE_CHECK' | 'CROP_SOIL_SAMPLE';
+  inspectorName: string;
+  inspectorRole: 'VETERINARY_DOCTOR' | 'IRRIGATION_ENGINEER' | 'AGRONOMIST';
+  wilaya: string;
+  zoneId: string; // e.g. "MILA-TESSALA", "MILA-BAINAN"
+  coordinates: [number, number];
+  capturedAt: string;
+  syncedAt?: string;
+  syncStatus: 'QUEUED_LOCAL' | 'SYNCING' | 'RECONCILED' | 'CONFLICT_RESOLVED';
+  retryCount: number;
+  payload: Record<string, any>;
+  sha256Signature: string;
+}
+
+export interface MlYieldForecastModel {
+  id: string;
+  cropType: 'DURUM_WHEAT' | 'OLIVES_CHEMLAL' | 'OLIVES_SIGOISE' | 'SAHARAN_BARLEY';
+  cropTypeAr: string;
+  zoneNameAr: string;
+  zoneNameEn: string;
+  targetHarvestDate: string;
+  forecastWindowDays: number; // 30 days prior
+  predictedYieldTonsPerHa: number;
+  historicalAverageTonsPerHa: number;
+  gainVsHistoricalPercent: number;
+  modelAccuracyPercent: number; // >= 94%
+  confidenceLowerBound: number;
+  confidenceUpperBound: number;
+  featuresUsed: {
+    ndviPeak: number;
+    eviIndex: number;
+    gddThermalSum: number;
+    waterDeficitSumMm: number;
+    soilNitrogenPpm: number;
+  };
+  algorithm: 'XGBoost-Regressor-v3.4' | 'RandomForest-Ensemble';
+  generatedAt: string;
+}
+
+export interface CustomsExportDossier {
+  certificateId: string;
+  commodityTypeAr: string;
+  commodityTypeEn: string;
+  batchId: string;
+  concessionCode: string;
+  exporterEntity: string;
+  destinationPort: string;
+  volumeMetricTons: number;
+  purityCertification: string;
+  organicClassification: boolean;
+  sha256VerifiableCredential: string;
+  customsGatewayStatus: 'SEALED_VALID' | 'PENDING_CLEARANCE' | 'IN_TRANSIT';
+  issuedAt: string;
+}
+
